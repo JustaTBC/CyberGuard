@@ -1,36 +1,58 @@
-
-import { Link } from "react-router-dom";
-import "./styles.css"
-import logo from "./assets/logo.png";
-import logoGoogle from "./assets/google.svg";
+import { useState } from "react"; // ADD THIS
+import { Link, useNavigate } from "react-router-dom";
+import "./styles.css";
+// ... (your logo imports)
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:8080/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/"); // Go to Home (as defined in your routes.jsx)
+      } else {
+        alert("Falha no login");
+      }
+    } catch (err) { console.error(err); }
+  };
+
   return (
     <div className="cadastro-container">
       <div className="cadastro-card">
-        <img src={logo} className="logo-login"/>
-        <form>
-          <label htmlFor="nome">Usuário</label>
-          <input type="text" id="nome" name="nome" />
+        {/* ... logo ... */}
+        <form onSubmit={handleLogin}>
+          <label htmlFor="email">Email</label>
+          <input 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
 
-          <label htmlFor="email">Senha</label>
-          <input type="email" id="email" name="email" />
+          <label htmlFor="senha">Senha</label>
+          <input 
+            type="password" 
+            value={senha} 
+            onChange={(e) => setSenha(e.target.value)} 
+            required 
+          />
 
-          <Link type="submit" to={'/home'} className="btn-cadastrar">
+          <button type="submit" className="btn-cadastrar">
             Entrar
-          </Link>
-
-          <Link type="submit" to={'/home'} className="btn-cadastrar-google">
-            <img src={logoGoogle} />
-            Entrar com Google
-          </Link>
-
-          <Link to={''} className="link-login">
-            Esqueceu a senha &gt;
-          </Link>
-          <Link to={'/cadastro'} className="link-login">
-            Primeiro acesso &gt;
-          </Link>
+          </button>
+          
+          {/* Keep your other Links as they are */}
         </form>
       </div>
     </div>
