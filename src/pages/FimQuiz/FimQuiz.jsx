@@ -1,47 +1,79 @@
+import { useEffect, useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import iconeContorno from './assets/iconeContorno.svg';
 import iconePesquisa from './assets/iconePesquisa.svg';
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
 import "./styles.css"; 
-import { Link } from 'react-router-dom';
 
 export default function FimQuiz() {
+  const location = useLocation();
+  const [pontuacao, setPontuacao] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+
+  // Pegamos as respostas e a categoria que vieram do QuizPerguntas
+  const respostasDoQuiz = location.state?.respostas || [];
+  const categoriaQuiz = location.state?.categoria || "seguranca";
+
+  useEffect(() => {
+    if (respostasDoQuiz.length === 0) {
+      setCarregando(false);
+      return;
+    }
+
+    // Fazemos o POST enviando a categoria na URL para o Java filtrar o gabarito
+    fetch(`http://localhost:8080/quiz/responder?categoria=${categoriaQuiz}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ respostas: respostasDoQuiz }),
+    })
+      .then((res) => res.text())
+      .then((data) => {
+        setPontuacao(data);
+        setCarregando(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao calcular pontuação:", err);
+        setCarregando(false);
+      });
+  }, [respostasDoQuiz, categoriaQuiz]);
+
   return (
     <div className="app-shell">
       <Header />
 
       <div className="app-content-feedback">
-        
         <div className="feedback-card">
-          
-         {/* Criei um container para agrupar os dois ícones*/}
-            <div className="icone-composto-container">
+          <div className="icone-composto-container">
+            <img 
+              src={iconeContorno} 
+              alt="Contorno" 
+              className="contorn-icon" 
+            />
+            <img 
+              src={iconePesquisa} 
+              alt="Pesquisa" 
+              className="pesquisa-icon" 
+            />
+          </div>
 
-            {/* Imagem de fundo (o contorno) */}
-                <img 
-                    src={iconeContorno} 
-                    alt="Contorno do ícone" 
-                    className="contorn-icon" 
-                />
-
-            {/* Imagem de cima (a pesquisa) */}
-                 <img 
-                      src={iconePesquisa} 
-                      alt="Ícone de pesquisa" 
-                      className="pesquisa-icon" 
-                 />
-
-</div>
-          {/* Texto de Confirmação */}
           <p className="feedback-text">
-            PARABÉNS, VOCÊ CONCLUIU O QUIZ!
+            {respostasDoQuiz.length > 0 
+              ? "PARABÉNS, VOCÊ CONCLUIU O QUIZ!" 
+              : "OPS! PARECE QUE VOCÊ AINDA NÃO FEZ O QUIZ."}
           </p>
 
-          {/* Botão para Voltar Ao Inicio */}
+          {carregando ? (
+            <p className="feedback-score">Calculando seu resultado...</p>
+          ) : (
+            pontuacao && <h2 className="pontuacao-final">{pontuacao}</h2>
+          )}
+
           <Link to="/" className="feedback-btn">
             Voltar para a tela inicial
           </Link>
-
         </div>
       </div>
       

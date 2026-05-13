@@ -1,8 +1,8 @@
-
+/* --- Banner e Badge Superior --- */
 .cert-banner {
   display: flex;
   justify-content: center;
-  margin-bottom: -1rem;
+  margin-bottom: 1.5rem;
 }
 
 .cert-badge {
@@ -13,7 +13,6 @@
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
   display: grid;
   place-items: center;
-  margin-bottom: -1.5rem;
 }
 
 .cert-badge img {
@@ -22,6 +21,7 @@
   display: block;
 }
 
+/* --- Opções de Resposta (SIM/NÃO) --- */
 .quiz-options {
   display: flex;
   flex-direction: column;
@@ -30,256 +30,137 @@
   align-items: center;
 }
 
-
-.quiz-btn {
+.quiz-btn-option {
   width: 85%;
   background: #fff;
   color: #333;
+  border: 2px solid transparent;
   border-radius: 0.75rem;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
   padding: 0.875rem 1.25rem;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: all 0.2s ease;
-}
-
-
-.quiz-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+/* Estado Selecionado (Azul) */
+.quiz-btn-option.is-selected {
+  background-color: var(--cor-secundaria);
+  color: #fff;
+  transform: translateX(5px);
+}
 
-.quiz-number {
+.quiz-btn-option.is-selected .quiz-num {
+  color: #fff;
+}
+
+.quiz-num {
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--cor-secundaria);
 }
 
-
-.quiz-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-
-
-.quiz-sublabel {
-  font-weight: 500;
-  color: #4169e1;
-  font-size: 0.9rem;
-}
-
-
-.quiz-right {
-  display: flex;
-  align-items: center;
-}
-
-
-.quiz-circle {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid var(--cor-secundaria);
-  border-radius: 50%;
-}
-
-
-.quiz-circle--active {
-  background-color: var(--cor-secundaria);
-}
-
-
-.quiz-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
-}
-
-.confirm-link {
-  background: #fff;
-  color: #4169e1;
+/* --- Botão de Conferir --- */
+.btn-cadastrar {
+  margin-top: 1.5rem;
+  background: var(--cor-secundaria);
+  color: white;
   font-weight: 700;
-  text-decoration: none;
-  border-radius: 0.6rem;
-  padding: 0.6rem 1rem;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: all 0.2s ease;
   border: none;
-}
-
-.confirm-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
-}
-
-.confirm-link .seta {
-  font-size: 1rem;
-  color: #4169e1;
-}
-
-/* Botão de confirmação antes de mostrar o link */
-.confirm-btn {
-  background: #fff;
-  color: var(--cor-secundaria);
-  border: 2px solid var(--cor-secundaria);
-  font-weight: 700;
   border-radius: 0.6rem;
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 2rem;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.confirm-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
-}
-
-.confirm-btn:disabled {
-  opacity: 0.5;
+.btn-cadastrar:disabled {
+  background: #ccc;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
-/* --- Layout geral do modal --- */
+/* --- Modal de Feedback --- */
 .quiz-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 20, 60, 0.45);
-  backdrop-filter: blur(2px);
+  background: rgba(5, 20, 60, 0.6); /* Fundo um pouco mais escuro para contraste */
+  backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
-  z-index: 999;
+  z-index: 9999;
 }
 
 .quiz-modal {
   position: relative;
-  width: min(92vw, 360px);
-  background: var(--cor-secundaria);
-  color: #2a43c6;
-  border-radius: 1rem;
-  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.25);
-  padding: 1.25rem 1rem 2.75rem;
-  animation: popupIn 150ms ease-out;
+  width: min(90vw, 360px);
+  border-radius: 1.5rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.3);
+  padding: 2rem 1.5rem 4rem; /* Padding inferior maior para os botões */
+  animation: popupIn 200ms ease-out;
+  color: #000;
 }
+
+/* Cores Dinâmicas do Modal */
+.quiz-modal.correct { background-color: #00c853; }   /* Verde */
+.quiz-modal.incorrect { background-color: #f24822; } /* Vermelho/Laranja */
 
 @keyframes popupIn {
-  from {
-    transform: translateY(10px) scale(0.98);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
-
 
 .modal-icon {
-  font-size: 2rem;
+  font-size: 3rem;
   text-align: center;
-  margin-bottom: 0.25rem;
-  user-select: none;
-}
-
-.quiz-modal.correct{
-  background-color: #00c853;
-}
-
-.quiz-modal.incorrect{
-  background-color:#f24822 ;
-}
-
-.quiz-modal.correct .modal-icon {
-  color: #00c853; 
-}
-
-.quiz-modal.incorrect .modal-icon {
-  color: #e64545; 
+  margin-bottom: 0.5rem;
+  color: #fff !important; /* Ícone sempre branco sobre o fundo colorido */
 }
 
 .modal-title {
   text-align: center;
-  font-weight: 800;
-  font-size: 1.25rem;
+  font-weight: 900;
+  font-size: 1.4rem;
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  color: #000000;
+  margin-bottom: 1rem;
+  color: #fff;
 }
-
-
 
 .modal-body {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 0.75rem;
   text-align: center;
-  line-height: 1.35;
-  color: #000000;
+  line-height: 1.4;
 }
 
-.modal-body strong {
-  display: block;
-  margin-bottom: 0.25rem;
-}
-
-
+/* Botões de Navegação no Modal (Setas ou Texto) */
 .modal-next {
   position: absolute;
-  bottom: 0.8rem;
-  font-size: 1.6rem;
+  bottom: 1rem;
+  background: white;
   border: none;
+  font-size: 1rem;
+  font-weight: 800;
   cursor: pointer;
-  padding: 0.25rem 0.4rem;
-  border-radius: 0.5rem;
-  background: transparent;
-  transition: transform 0.15s ease, color 0.15s ease;
+  padding: 0.6rem 1.2rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
 }
 
-
-.next-right {
-  right: 0.9rem;
-  color: #2a43c6;
+.modal-next--left {
+  left: 1.5rem;
+  color: #f24822; /* Texto vermelho para o "Tentar Novamente" */
 }
 
-
-.next-left {
-  left: 0.9rem;
-  color: #000000;
+.modal-next--right {
+  right: 1.5rem;
+  color: #00c853; /* Texto verde para o "Próxima" */
 }
 
 .modal-next:hover {
-  transform: scale(1.15);
+  transform: scale(1.05);
 }
-
-
-.quiz-modal.correct .modal-icon { color: #0a0a0a; }   
-.quiz-modal.incorrect .modal-icon { color: #000000; } 
-
-
-.modal-next {
-  position: absolute;
-  bottom: 0.8rem;
-  background: transparent;
-  border: none;
-  font-size: 1.6rem;
-  cursor: pointer;
-  padding: 0.25rem 0.4rem;
-  border-radius: 0.5rem;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  text-decoration: none; 
-}
-
-
-.modal-next--left  { left: 0.9rem;  right: auto; }
-.modal-next--right { right: 0.9rem; left:  auto; }
-
-
-.modal-next--danger  { color: #000000; } 
-.modal-next--primary { color: #000000; }  
-
-.modal-next:hover { transform: translateX(2px); }
-.modal-next--left:hover  { transform: translateX(-2px); }

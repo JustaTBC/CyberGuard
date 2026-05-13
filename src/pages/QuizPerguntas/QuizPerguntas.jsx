@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
 import "./styles.css";
@@ -7,95 +7,112 @@ import quizIcon from "./assets/quiz.svg";
 import CardLaranja from "../../componentes/CardLaranja";
 
 export default function QuizPerguntas() {
-  const quizzes = [
-    { id: 1, label: "Usar datas comemorativas, como aniversário", 
-      correct: false, 
-      explanation: "Datas como aniversário, são informações fáceis de se obter, por isso não são senhas seguras" },
-    { id: 2, label: "Senha compostas por números, letras e símbolos",
-      correct: true,  
-      explanation: "Usar letras, números e símbolos torna a senha muito mais difícil de adivinhar, reduzindo invasões e aumentando sua segurança online" },
-    { id: 3, label: "Sempre uso a mesma senha em todos os cadastros", 
-      correct: false, 
-      explanation: "Usar a mesma senha em todos os sites facilita invasões: se um serviço for vazado, todos os seus outros acessos ficam comprometidos." },
-  ];
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // 1. Definição dos Estados
+  const queryParams = new URLSearchParams(location.search);
+  const categoria = queryParams.get("categoria") || "seguranca";
+
+  const [perguntas, setPerguntas] = useState([]);
+  const [indiceAtual, setIndiceAtual] = useState(0);
+  const [carregando, setCarregando] = useState(true);
   const [selectedId, setSelectedId] = useState(null);
-  const [feedback, setFeedback] = useState(null); 
+  const [feedback, setFeedback] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [explanation, setExplanation] = useState("");
+  const [respostasUsuario, setRespostasUsuario] = useState([]);
 
-  
+  // 2. Carregar perguntas do Backend
   useEffect(() => {
-    document.body.style.overflow = showModal ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
-  }, [showModal]);
+    setCarregando(true);
+    fetch(`http://localhost:8080/quiz?categoria=${categoria}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setPerguntas(data);
+        setCarregando(false);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar perguntas:", error);
+        setCarregando(false);
+      });
+  }, [categoria]);
 
+  // 3. Funções de Lógica
   const handleConfirm = () => {
-    const item = quizzes.find(q => q.id === selectedId);
-    if (!item) return;
-    const ok = item.correct;
-    setFeedback(ok ? "correto" : "incorreto");
-    setExplanation(item.explanation || "");
+    const isCorrect = selectedId === perguntas[indiceAtual].respostaCorreta;
+    setFeedback(isCorrect ? "correto" : "incorreto");
     setShowModal(true);
+    
+    // Adiciona a resposta atual ao array de respostas acumuladas
+    setRespostasUsuario((prev) => [...prev, selectedId]);
   };
 
-  const closeModal = () => setShowModal(false);
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedId(null);
+    setFeedback(null);
+  };
 
-  const nextPath = "/FimQuiz"; 
+  const handleNext = () => {
+    if (indiceAtual < perguntas.length - 1) {
+      setIndiceAtual(indiceAtual + 1);
+      closeModal();
+    } else {
+      // Envia as respostas e a categoria para o FimQuiz
+      navigate("/fimquiz", { 
+        state: { 
+          respostas: respostasUsuario, 
+          categoria: categoria 
+        } 
+      });
+    }
+  };
 
+  // 4. Renderização Condicional (Loading)
+  if (carregando) {
+    return <div className="loading">Carregando perguntas de {categoria}...</div>;
+  }
+
+  // 5. Renderização Principal
   return (
     <>
       <Header />
 
       <CardLaranja className="cardlaranja-espaco">
-
         <div className="cert-banner">
           <div className="cert-badge">
             <img src={quizIcon} alt="Quiz" />
           </div>
         </div>
 
+        <div className="quiz-content">
+          <p className="quiz-subtitle">
+            {perguntas[indiceAtual]?.enunciado}
+          </p>
 
-        <p className="quiz-subtitle">
-          Como você cadastra suas senhas?<br />
-        </p>
-
-
-        <div className="quiz-options">
-          {quizzes.map((q) => (
+          <div className="quiz-options">
             <button
-              key={q.id}
               type="button"
-              className={`quiz-btn ${selectedId === q.id ? "is-selected" : ""}`}
-              onClick={() => {
-                setSelectedId(q.id);
-                setFeedback(null);
-              }}
-              aria-pressed={selectedId === q.id}
+              className={`quiz-btn-option ${selectedId === "sim" ? "is-selected" : ""}`}
+              onClick={() => setSelectedId("sim")}
             >
-              <div className="quiz-left">
-                <span className="quiz-number">{q.id}</span>
-                <span className="quiz-text">
-                  <span className="quiz-sublabel">{q.label}</span>
-                </span>
-              </div>
-
-              <div className="quiz-right">
-                <div
-                  className={`quiz-circle ${
-                    selectedId === q.id ? "quiz-circle--active" : ""
-                  }`}
-                />
-              </div>
+              <span className="quiz-num">A</span>
+              <span className="quiz-texto">SIM</span>
             </button>
-          ))}
-        </div>
 
+            <button
+              type="button"
+              className={`quiz-btn-option ${selectedId === "nao" ? "is-selected" : ""}`}
+              onClick={() => setSelectedId("nao")}
+            >
+              <span className="quiz-num">B</span>
+              <span className="quiz-texto">NÃO</span>
+            </button>
+          </div>
 
-        <div className="quiz-actions">
           <button
             type="button"
-            className="confirm-btn"
+            className="btn-cadastrar"
             onClick={handleConfirm}
             disabled={!selectedId}
           >
@@ -105,11 +122,8 @@ export default function QuizPerguntas() {
       </CardLaranja>
 
       {showModal && (
-        <div className="quiz-modal-overlay" onClick={closeModal}>
-          <div
-            className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="quiz-modal-overlay">
+          <div className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}>
             <div className="modal-icon">
               {feedback === "correto" ? "✓" : "✕"}
             </div>
@@ -120,33 +134,29 @@ export default function QuizPerguntas() {
 
             <div className="modal-body">
               <strong>Explicação:</strong>
-              <p>{explanation || "Sem explicação disponível no momento."}</p>
+              <p>{perguntas[indiceAtual]?.explicacao}</p>
             </div>
 
             {feedback === "incorreto" ? (
-
               <button
                 type="button"
-                className="modal-next modal-next--left modal-next--danger"
+                className="modal-next modal-next--danger"
                 onClick={closeModal}
-                aria-label="Tentar novamente"
               >
-                ←
+                Tentar novamente
               </button>
             ) : (
-
-              <Link
-                to={nextPath}
-                className="modal-next modal-next--right modal-next--primary"
-                aria-label="Próximo"
+              <button
+                type="button"
+                className="modal-next modal-next--primary"
+                onClick={handleNext}
               >
-                →
-              </Link>
+                {indiceAtual === perguntas.length - 1 ? "Finalizar" : "Próxima"}
+              </button>
             )}
           </div>
         </div>
       )}
-
 
       <Footer />
     </>
