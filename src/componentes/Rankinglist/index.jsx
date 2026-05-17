@@ -1,15 +1,7 @@
-
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 
-const jogadores = [
-  { id: 1, nome: "Leonardo", pontos: "10.000", foto: "https://i.pravatar.cc/50?img=1", posicao: 1 },
-  { id: 2, nome: "Maria Aparecida", pontos: "8,000", foto: "https://i.pravatar.cc/50?img=2", posicao: 2 },
-  { id: 3, nome: "", pontos: "5000", foto: "", posicao: 3 },
-  { id: 4, nome: "", pontos: "", foto: "", posicao: 4 },
-  { id: 5, nome: "", pontos: "", foto: "", posicao: 5 },
-  { id: 6, nome: "", pontos: "", foto: "", posicao: 6 },
-];
-
+// Mantemos o teu mapeamento de medalhas
 const medalhas = {
   1: "🥇",
   2: "🥈",
@@ -17,6 +9,40 @@ const medalhas = {
 };
 
 const Rankinglists = () => {
+
+  const [jogadores, setJogadores] = useState([]);
+
+  useEffect(() => {
+   
+    fetch("http://localhost:8080/ranking")
+      .then((response) => response.json())
+      .then((data) => {
+
+        const jogadoresFormatados = data.map((item, index) => ({
+          id: index + 1,
+          nome: item.nome,
+          pontos: item.pontuacao,
+
+          foto: `https://ui-avatars.com/api/?name=${item.nome}&background=random`,
+          posicao: index + 1,
+        }));
+
+
+        while (jogadoresFormatados.length < 6) {
+          const nextId = jogadoresFormatados.length + 1;
+          jogadoresFormatados.push({
+            id: nextId,
+            nome: "",
+            pontos: "",
+            foto: "",
+            posicao: nextId,
+          });
+        }
+
+        setJogadores(jogadoresFormatados);
+      })
+      .catch((error) => console.error("Erro ao buscar o ranking:", error));
+  }, []); 
   return (
     <div className="ranking-container">
       <h1 className="ranking-title">Ranking</h1>
@@ -36,9 +62,10 @@ const Rankinglists = () => {
               )}
 
               <div className="jogador-info">
+                {/* Se não houver nome, mostra o teu traço "—" */}
                 <p className="jogador-nome">{jogador.nome || "—"}</p>
                 <p className="jogador-pontos">
-                  {jogador.pontos ? `${jogador.pontos} Pontos` : ""}
+                  {jogador.pontos !== "" ? `${jogador.pontos} Pontos` : ""}
                 </p>
               </div>
             </div>
