@@ -11,7 +11,7 @@ export default function FimQuiz() {
   const [pontuacao, setPontuacao] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
-  // Pegamos as respostas e a categoria que vieram do QuizPerguntas
+  // Apanhamos as respostas e a categoria que vieram do QuizPerguntas
   const respostasDoQuiz = location.state?.respostas || [];
   const categoriaQuiz = location.state?.categoria || "seguranca";
 
@@ -21,13 +21,20 @@ export default function FimQuiz() {
       return;
     }
 
-    // Fazemos o POST enviando a categoria na URL para o Java filtrar o gabarito
+    // 1. Recuperar o e-mail do utilizador que foi guardado no Login
+    const emailDoUsuario = localStorage.getItem("usuarioEmail");
+
+    // Fazemos o POST a enviar a categoria na URL para o Java filtrar o gabarito
     fetch(`http://localhost:8080/quiz/responder?categoria=${categoriaQuiz}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ respostas: respostasDoQuiz }),
+      // 2. Adicionamos o emailUsuario ao corpo da requisição (body) para o Java o conseguir identificar
+      body: JSON.stringify({ 
+        respostas: respostasDoQuiz,
+        emailUsuario: emailDoUsuario
+      }),
     })
       .then((res) => res.text())
       .then((data) => {
@@ -35,7 +42,7 @@ export default function FimQuiz() {
         setCarregando(false);
       })
       .catch((err) => {
-        console.error("Erro ao calcular pontuação:", err);
+        console.error("Erro ao calcular a pontuação:", err);
         setCarregando(false);
       });
   }, [respostasDoQuiz, categoriaQuiz]);
@@ -66,13 +73,13 @@ export default function FimQuiz() {
           </p>
 
           {carregando ? (
-            <p className="feedback-score">Calculando seu resultado...</p>
+            <p className="feedback-score">A calcular o seu resultado...</p>
           ) : (
             pontuacao && <h2 className="pontuacao-final">{pontuacao}</h2>
           )}
 
           <Link to="/" className="feedback-btn">
-            Voltar para a tela inicial
+            Voltar para o ecrã inicial
           </Link>
         </div>
       </div>
