@@ -2,42 +2,38 @@ import React, { useState, useEffect } from "react";
 import "./styles.css";
 
 const Pontuacao = () => {
-  // 1. Pega o nome do usuário que está logado (salvo no momento do Login)
+  // Pegamos o Nome e o E-mail de quem fez o login
   const nomeUsuarioLogado = localStorage.getItem("usuarioNome") || "Usuário";
+  const emailUsuarioLogado = localStorage.getItem("usuarioEmail"); 
   
-  // 2. Estados para guardar a pontuação e controlar o carregamento
   const [pontos, setPontos] = useState(0);
   const [carregando, setCarregando] = useState(true);
 
-  // 3. Busca os dados reais no Backend assim que o componente carrega
   useEffect(() => {
-    fetch("http://localhost:8080/ranking")
+    // Se por acaso não tiver ninguém logado, nem tenta buscar
+    if (!emailUsuarioLogado) {
+      setCarregando(false);
+      return;
+    }
+
+    // Chama a nossa ROTA NOVA do Java passando o e-mail na URL
+    fetch(`http://localhost:8080/ranking/pontuacao?email=${emailUsuarioLogado}`)
       .then((response) => response.json())
-      .then((dadosDoRanking) => {
-        // Procura na lista do ranking se existe alguém com o nome do nosso usuário logado
-        const usuarioEncontrado = dadosDoRanking.find(
-          (jogador) => jogador.nome === nomeUsuarioLogado
-        );
-        
-        // Se encontrar o usuário, atualiza os pontos. Se não, continua 0.
-        if (usuarioEncontrado) {
-          setPontos(usuarioEncontrado.pontuacao);
-        }
-        
+      .then((pontuacaoExata) => {
+        setPontos(pontuacaoExata); // Salva a pontuação exata na tela
         setCarregando(false);
       })
       .catch((error) => {
-        console.error("Erro ao buscar a pontuação:", error);
+        console.error("Erro ao buscar a pontuação do usuário:", error);
         setCarregando(false);
       });
-  }, [nomeUsuarioLogado]);
+  }, [emailUsuarioLogado]);
 
   return (
     <div className="pontuacao-container">
       <h3 className="pontuacao-titulo">SUA PONTUAÇÃO</h3>
 
       <div className="pontuacao-card">
-        {/* Mantivemos a imagem de avatar padrão, mas você pode alterar depois */}
         <img 
           src="https://i.pravatar.cc/50?img=2" 
           alt="Foto do usuário" 
@@ -45,10 +41,7 @@ const Pontuacao = () => {
         />
         
         <div className="pontuacao-info">
-          {/* Exibe o nome dinâmico vindo do localStorage */}
           <p className="pontuacao-nome">{nomeUsuarioLogado}</p>
-          
-          {/* Exibe os pontos dinâmicos vindos do Java */}
           <p className="pontuacao-pontos">
             {carregando ? "Carregando..." : `${pontos.toLocaleString()} Pontos`}
           </p>
