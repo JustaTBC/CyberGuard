@@ -8,11 +8,11 @@ const Noticias = () => {
   useEffect(() => {
     async function carregarNoticias() {
       try {
-
-        const response = await fetch("/api/noticias");
+        // A ÚNICA MUDANÇA ESTÁ AQUI: Apontamos para o servidor Java
+        const response = await fetch("http://localhost:8080/api/noticias");
 
         if (!response.ok) {
-          throw new Error("Resposta não OK da API /api/noticias");
+          throw new Error("Resposta não OK da API do Java");
         }
 
         const data = await response.json();
