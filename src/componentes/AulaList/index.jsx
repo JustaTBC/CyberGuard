@@ -1,8 +1,9 @@
-// src/componentes/AulaList/index.jsx
 import "./styles.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { listPlaylistItems } from "../../services/youtube";
+
+// APAGAMOS A IMPORTAÇÃO ANTIGA:
+// import { listPlaylistItems } from "../../services/youtube";
 
 export default function AulasList() {
   const [videos, setVideos] = useState([]);
@@ -14,7 +15,17 @@ export default function AulasList() {
     try {
       setLoading(true);
       setErro("");
-      const data = await listPlaylistItems({ pageToken: pagina, maxResults: 10 });
+      
+
+      const resposta = await fetch(`http://localhost:8080/api/aulas?pageToken=${pagina}&maxResults=10`);
+      
+      if (!resposta.ok) {
+         throw new Error("Erro na comunicação com o servidor.");
+      }
+      
+
+      const data = await resposta.json();
+      
       const novos = (data.items || [])
         .map((item) => {
           const sn = item.snippet;
@@ -28,7 +39,8 @@ export default function AulasList() {
               sn?.thumbnails?.default?.url,
           };
         })
-        .filter(v => !!v.id); // garante que tem videoId
+        .filter(v => !!v.id); 
+        
       setVideos((prev) => [...prev, ...novos]);
       setNextPageToken(data.nextPageToken || "");
     } catch (e) {
@@ -40,12 +52,8 @@ export default function AulasList() {
   }
 
   useEffect(() => {
-    carregar(); // primeira página
+    carregar(); 
   }, []);
-
-    console.log("API KEY:", import.meta.env.VITE_YT_API_KEY);
-    console.log("PLAYLIST:", import.meta.env.VITE_YT_PLAYLIST_ID);
-
 
   return (
     <div className="aulas-card">
@@ -69,11 +77,9 @@ export default function AulasList() {
             <div className="texto">
               <h3>{v.titulo}</h3>
               <p>{v.desc?.length > 90 ? v.desc.slice(0, 90) + "..." : v.desc}</p>
-              {/* remova a linha de traços */}
             </div>
           </Link>
         ))}
-
 
       <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "1rem" }}>
         {loading ? (
