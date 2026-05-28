@@ -5,10 +5,12 @@ const Noticias = () => {
   const [noticias, setNoticias] = useState([]);
   const [erro, setErro] = useState(null); 
 
-  useEffect(() => {
+ useEffect(() => {
     async function carregarNoticias() {
       try {
-        // A ÚNICA MUDANÇA ESTÁ AQUI: Apontamos para o servidor Java
+        // LIMPAMOS O ERRO AQUI! Assim a mensagem desaparece quando dá certo.
+        setErro(null);
+
         const response = await fetch("http://localhost:8080/api/noticias");
 
         if (!response.ok) {
@@ -24,7 +26,7 @@ const Noticias = () => {
     }
 
     carregarNoticias();
-  }, []);
+  }, []); 
 
   return (
     <div className="noticias-container">
