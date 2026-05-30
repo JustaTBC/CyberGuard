@@ -38,12 +38,14 @@ export default function VideoAula() {
   };
 
   // Configurações do player (opcional: autoplay)
-  const opcoesPlayer = {
+ const opcoesPlayer = {
     height: '100%',
     width: '100%',
+    host: 'https://www.youtube-nocookie.com', // 1. Restaura o modo sem cookies que você usava
     playerVars: {
-      autoplay: 1, // 1 = começa a tocar sozinho
-      rel: 0 // não mostra vídeos recomendados de outros canais
+      autoplay: 1,
+      rel: 0,
+      origin: window.location.origin // 2. AVISA O YOUTUBE DE ONDE ESTAMOS ACESSANDO
     },
   };
 
