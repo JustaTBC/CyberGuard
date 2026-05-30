@@ -7,8 +7,8 @@ import iconeCertificado from "./assets/certificLogo.svg";
 const Certificados = () => {
   const [certificados, setCertificados] = useState([]);
 
-  useEffect(() => {
-    const emailUsuario = localStorage.getItem("emailUsuario") || "email@exemplo.com";
+useEffect(() => {
+    const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
 
     fetch(`http://localhost:8080/api/certificados/${emailUsuario}`)
       .then((res) => res.json())

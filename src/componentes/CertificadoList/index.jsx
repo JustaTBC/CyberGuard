@@ -8,9 +8,7 @@ export default function CertificadosList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Procura o email do utilizador logado no localStorage
-    // Caso não exista, usa um email temporário de teste
-    const emailUsuario = localStorage.getItem("emailUsuario") || "email@exemplo.com";
+    const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
 
     fetch(`http://localhost:8080/api/certificados/${emailUsuario}`)
       .then((res) => res.json())
