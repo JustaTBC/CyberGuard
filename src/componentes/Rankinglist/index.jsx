@@ -13,7 +13,7 @@ export default function Rankinglists() {
 
   useEffect(() => {
     // Busca os dados do seu backend Java
-    fetch("http://localhost:8080/ranking")
+    fetch("/ranking")
       .then((response) => response.json())
       .then((data) => {
         const jogadoresFormatados = data.map((item, index) => ({
@@ -43,11 +43,21 @@ export default function Rankinglists() {
         console.error("Erro ao buscar o ranking:", error);
         setCarregando(false);
       });
-  }, []); 
+  }, []);
 
   // Exibe essa mensagem enquanto o React conversa com o Java
   if (carregando) {
-    return <h2 style={{ textAlign: "center", marginTop: "2rem", color: "var(--cor-secundaria)" }}>Carregando Top 10...</h2>;
+    return (
+      <h2
+        style={{
+          textAlign: "center",
+          marginTop: "2rem",
+          color: "var(--cor-secundaria)",
+        }}
+      >
+        Carregando Top 10...
+      </h2>
+    );
   }
 
   return (
@@ -72,7 +82,9 @@ export default function Rankinglists() {
                 {/* Se não houver nome, mostra o traço "—" */}
                 <p className="jogador-nome">{jogador.nome || "—"}</p>
                 <p className="jogador-pontos">
-                  {jogador.pontos !== "" ? `${jogador.pontos.toLocaleString()} Pontos` : ""}
+                  {jogador.pontos !== ""
+                    ? `${jogador.pontos.toLocaleString()} Pontos`
+                    : ""}
                 </p>
               </div>
             </div>

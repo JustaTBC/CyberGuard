@@ -11,7 +11,7 @@ export default function Cadastro() {
     email: "",
     usuario: "", // Nome de usuário (uso local/frontend)
     senha: "",
-    confirmar: ""
+    confirmar: "",
   });
 
   // Função para atualizar o estado conforme o usuário digita
@@ -19,7 +19,7 @@ export default function Cadastro() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -35,16 +35,16 @@ export default function Cadastro() {
 
     try {
       // Chamada para o seu UsuarioController no Spring Boot
-      const response = await fetch("http://localhost:8080/usuarios/register", {
+      const response = await fetch("/usuarios/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         // Enviamos apenas o que o seu Usuario.java espera
         body: JSON.stringify({
           nome: formData.nome,
           email: formData.email,
-          senha: formData.senha
+          senha: formData.senha,
         }),
       });
 
@@ -65,63 +65,63 @@ export default function Cadastro() {
     <div className="cadastro-container">
       <div className="cadastro-card">
         <h1>CyberGuard</h1>
-        
+
         <form onSubmit={handleSubmit}>
           <label htmlFor="nome">Nome completo</label>
-          <input 
-            type="text" 
-            id="nome" 
-            name="nome" 
+          <input
+            type="text"
+            id="nome"
+            name="nome"
             value={formData.nome}
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
 
           <label htmlFor="email">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
+          <input
+            type="email"
+            id="email"
+            name="email"
             value={formData.email}
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
 
           <label htmlFor="usuario">Nome de Usuário</label>
-          <input 
-            type="text" 
-            id="usuario" 
-            name="usuario" 
+          <input
+            type="text"
+            id="usuario"
+            name="usuario"
             value={formData.usuario}
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
 
           <label htmlFor="senha">Criar senha</label>
-          <input 
-            type="password" 
-            id="senha" 
-            name="senha" 
+          <input
+            type="password"
+            id="senha"
+            name="senha"
             value={formData.senha}
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
 
           <label htmlFor="confirmar">Confirmar senha</label>
-          <input 
-            type="password" 
-            id="confirmar" 
-            name="confirmar" 
+          <input
+            type="password"
+            id="confirmar"
+            name="confirmar"
             value={formData.confirmar}
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
 
           <button type="submit" className="btn-cadastrar">
             Cadastrar
           </button>
 
-          <Link to={'/login'} className="link-login">
+          <Link to={"/login"} className="link-login">
             Possuo cadastro &gt;
           </Link>
         </form>

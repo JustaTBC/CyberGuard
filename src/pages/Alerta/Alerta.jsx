@@ -16,7 +16,7 @@ export default function Alertas() {
 
   // 4. Pedimos ao Java para nos dar os dados assim que a tela abre
   useEffect(() => {
-    fetch("http://localhost:8080/api/alertas")
+    fetch("/api/alertas")
       .then((resposta) => resposta.json())
       .then((dados) => {
         setAlertas(dados); // Salvamos os dados do PostgreSQL no React

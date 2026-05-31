@@ -3,23 +3,23 @@ import { useNavigate, Link } from "react-router-dom";
 import "./styles.css";
 import logoImg from "./assets/logo.png";
 // Se você tiver o ícone do google, importe aqui:
-// import googleIcon from "./assets/google.svg"; 
+// import googleIcon from "./assets/google.svg";
 
 export default function Login() {
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setErro("");
     setCarregando(true);
 
     try {
-      const response = await fetch("http://localhost:8080/usuarios/login", {
+      const response = await fetch("/usuarios/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export default function Login() {
       localStorage.setItem("usuarioEmail", usuario.email);
 
       alert(`Bem-vindo, ${usuario.nome}!`);
-      
+
       navigate("/");
     } catch (err) {
       setErro(err.message || "Erro ao conectar com o servidor.");
@@ -49,11 +49,16 @@ export default function Login() {
   return (
     <div className="cadastro-container">
       <div className="cadastro-card">
-        
         {/* Usando a classe logo-login do seu CSS */}
         <img src={logoImg} alt="CyberGuard Logo" className="logo-login" />
-        
-        {erro && <div style={{ color: "#e74c3c", marginBottom: "10px", fontSize: "14px" }}>{erro}</div>}
+
+        {erro && (
+          <div
+            style={{ color: "#e74c3c", marginBottom: "10px", fontSize: "14px" }}
+          >
+            {erro}
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
           <label htmlFor="email">Email</label>
@@ -77,7 +82,7 @@ export default function Login() {
           <button type="submit" className="btn-cadastrar" disabled={carregando}>
             {carregando ? "Processando..." : "Entrar"}
           </button>
-          
+
           {/* Botão do Google que você estilizou no CSS */}
           {/* Descomente a imagem se você importou o ícone lá em cima */}
           <button type="button" className="btn-cadastrar-google">

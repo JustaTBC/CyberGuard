@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import iconeContorno from './assets/iconeContorno.svg';
-import iconePesquisa from './assets/iconePesquisa.svg';
+import { useEffect, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
+import iconeContorno from "./assets/iconeContorno.svg";
+import iconePesquisa from "./assets/iconePesquisa.svg";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import "./styles.css"; 
+import "./styles.css";
 
 export default function FimQuiz() {
   const location = useLocation();
@@ -25,15 +25,15 @@ export default function FimQuiz() {
     const emailDoUsuario = localStorage.getItem("usuarioEmail");
 
     // Fazemos o POST a enviar a categoria na URL para o Java filtrar o gabarito
-    fetch(`http://localhost:8080/quiz/responder?categoria=${categoriaQuiz}`, {
+    fetch(`/quiz/responder?categoria=${categoriaQuiz}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       // 2. Adicionamos o emailUsuario ao corpo da requisição (body) para o Java o conseguir identificar
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         respostas: respostasDoQuiz,
-        emailUsuario: emailDoUsuario
+        emailUsuario: emailDoUsuario,
       }),
     })
       .then((res) => res.text())
@@ -54,21 +54,13 @@ export default function FimQuiz() {
       <div className="app-content-feedback">
         <div className="feedback-card">
           <div className="icone-composto-container">
-            <img 
-              src={iconeContorno} 
-              alt="Contorno" 
-              className="contorn-icon" 
-            />
-            <img 
-              src={iconePesquisa} 
-              alt="Pesquisa" 
-              className="pesquisa-icon" 
-            />
+            <img src={iconeContorno} alt="Contorno" className="contorn-icon" />
+            <img src={iconePesquisa} alt="Pesquisa" className="pesquisa-icon" />
           </div>
 
           <p className="feedback-text">
-            {respostasDoQuiz.length > 0 
-              ? "PARABÉNS, VOCÊ CONCLUIU O QUIZ!" 
+            {respostasDoQuiz.length > 0
+              ? "PARABÉNS, VOCÊ CONCLUIU O QUIZ!"
               : "OPS! PARECE QUE VOCÊ AINDA NÃO FEZ O QUIZ."}
           </p>
 
@@ -83,8 +75,8 @@ export default function FimQuiz() {
           </Link>
         </div>
       </div>
-      
-      <Footer /> 
+
+      <Footer />
     </div>
   );
 }

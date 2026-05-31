@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import iconeBoneco from './assets/iconeBoneco.svg';
-import Footer from "../../componentes/Footer"; 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import iconeBoneco from "./assets/iconeBoneco.svg";
+import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import "./styles.css";  
+import "./styles.css";
 
 export default function RelatarGolpe() {
   const navigate = useNavigate();
-  
+
   // 1. Estados para guardar o que o usuário digita
   const [tipo, setTipo] = useState("");
   const [boletim, setBoletim] = useState("");
@@ -20,16 +20,18 @@ export default function RelatarGolpe() {
     setCarregando(true);
 
     // Como o Java só espera titulo e descricao, vamos juntar o BO na descrição
-    const descricaoCompleta = boletim ? `BO: ${boletim} - ${descricao}` : descricao;
+    const descricaoCompleta = boletim
+      ? `BO: ${boletim} - ${descricao}`
+      : descricao;
 
     const novaDenuncia = {
       titulo: tipo,
-      descricao: descricaoCompleta
+      descricao: descricaoCompleta,
     };
 
     try {
       // 3. Faz o POST para o seu backend Java
-      const response = await fetch("http://localhost:8080/denuncias", {
+      const response = await fetch("/denuncias", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,38 +54,42 @@ export default function RelatarGolpe() {
   };
 
   return (
-    <div className="app-shell"> 
-      <Header/>
-      
-      <div className="app-Content-golpe"> 
+    <div className="app-shell">
+      <Header />
+
+      <div className="app-Content-golpe">
         <h1 className="Page-title">Denúncias</h1>
 
-        <div className="Form-card"> 
+        <div className="Form-card">
           <div className="Form-Card-Icon-wrapper">
-            <img src={iconeBoneco} alt="Ícone de denúncia" className="form-card-icon" /> 
+            <img
+              src={iconeBoneco}
+              alt="Ícone de denúncia"
+              className="form-card-icon"
+            />
           </div>
 
           {/* 4. Transformamos a div num <form> */}
           <form className="Form-Container" onSubmit={handleSubmit}>
-            <input 
-              type="text" 
-              className="Form-Input" 
-              placeholder="Tipo de denúncia" 
+            <input
+              type="text"
+              className="Form-Input"
+              placeholder="Tipo de denúncia"
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
               required
             />
 
-            <input 
-              type="text" 
-              className="Form-Input" 
+            <input
+              type="text"
+              className="Form-Input"
               placeholder="Número do boletim de ocorrência (Opcional)"
               value={boletim}
               onChange={(e) => setBoletim(e.target.value)}
             />
 
-            <textarea 
-              className="Form-Textarea" 
+            <textarea
+              className="Form-Textarea"
               placeholder="Descrição"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
@@ -91,14 +97,18 @@ export default function RelatarGolpe() {
             ></textarea>
 
             {/* 5. Trocamos o Link por um botão de submissão */}
-            <button type="submit" className="denuncia-btn" disabled={carregando}>
+            <button
+              type="submit"
+              className="denuncia-btn"
+              disabled={carregando}
+            >
               {carregando ? "ENVIANDO..." : "ENVIAR DENÚNCIA"}
             </button>
           </form>
         </div>
       </div>
 
-      <Footer/> 
+      <Footer />
     </div>
   );
 }

@@ -6,12 +6,12 @@ import Header from "../../componentes/Header";
 import Footer from "../../componentes/Footer";
 import CardLaranja from "../../componentes/CardLaranja";
 // Renomeei a imagem para alertaIcone para não dar conflito com os dados
-import alertaIcone from "../Alerta/assets/alerta.png"; 
+import alertaIcone from "../Alerta/assets/alerta.png";
 import "./styles.css";
 
 export default function AlertaDetalhe() {
   const { id } = useParams();
-  
+
   // 2. Criamos os estados para guardar o alerta vindo do backend e o status de carregamento
   const [alertaSelecionado, setAlertaSelecionado] = useState(null);
   const [carregando, setCarregando] = useState(true);
@@ -19,7 +19,7 @@ export default function AlertaDetalhe() {
   // 3. Buscamos o alerta específico no backend toda vez que a página abrir
   useEffect(() => {
     // Certifique-se de que seu backend Java possui uma rota GET /api/alertas/{id}
-    fetch(`http://localhost:8080/api/alertas/${id}`)
+    fetch(`/api/alertas/${id}`)
       .then((resposta) => {
         if (!resposta.ok) {
           throw new Error("Alerta não encontrado");
@@ -41,8 +41,11 @@ export default function AlertaDetalhe() {
     return (
       <div className="app-shell">
         <Header />
-        <div className="app-content" style={{ textAlign: "center", padding: "20px" }}>
-           <p>Carregando alerta...</p>
+        <div
+          className="app-content"
+          style={{ textAlign: "center", padding: "20px" }}
+        >
+          <p>Carregando alerta...</p>
         </div>
         <Footer />
       </div>
@@ -55,11 +58,11 @@ export default function AlertaDetalhe() {
       <div className="app-shell">
         <Header />
         <div className="app-content">
-        <div className="alerta-back-wrapper">
-        <Link to="/alerta" className="alerta-back-top">
-            ← Voltar
-        </Link>
-        </div>
+          <div className="alerta-back-wrapper">
+            <Link to="/alerta" className="alerta-back-top">
+              ← Voltar
+            </Link>
+          </div>
 
           <section className="alerta-detalhe">
             <CardLaranja>
@@ -80,9 +83,9 @@ export default function AlertaDetalhe() {
       <div className="app-content">
         {/* botão voltar no topo */}
         <div className="alerta-back-wrapper">
-        <Link to="/alerta" className="alerta-back-top">
+          <Link to="/alerta" className="alerta-back-top">
             ← Voltar
-        </Link>
+          </Link>
         </div>
 
         <section

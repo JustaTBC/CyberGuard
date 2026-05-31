@@ -25,7 +25,7 @@ export default function QuizPerguntas() {
   // 2. Carregar perguntas do Backend
   useEffect(() => {
     setCarregando(true);
-    fetch(`http://localhost:8080/quiz?categoria=${categoria}`)
+    fetch(`/quiz?categoria=${categoria}`)
       .then((response) => response.json())
       .then((data) => {
         setPerguntas(data);
@@ -42,7 +42,7 @@ export default function QuizPerguntas() {
     const isCorrect = selectedId === perguntas[indiceAtual].respostaCorreta;
     setFeedback(isCorrect ? "correto" : "incorreto");
     setShowModal(true);
-    
+
     // Adiciona a resposta atual ao array de respostas acumuladas
     setRespostasUsuario((prev) => [...prev, selectedId]);
   };
@@ -59,18 +59,20 @@ export default function QuizPerguntas() {
       closeModal();
     } else {
       // Envia as respostas e a categoria para o FimQuiz
-      navigate("/fimquiz", { 
-        state: { 
-          respostas: respostasUsuario, 
-          categoria: categoria 
-        } 
+      navigate("/fimquiz", {
+        state: {
+          respostas: respostasUsuario,
+          categoria: categoria,
+        },
       });
     }
   };
 
   // 4. Renderização Condicional (Loading)
   if (carregando) {
-    return <div className="loading">Carregando perguntas de {categoria}...</div>;
+    return (
+      <div className="loading">Carregando perguntas de {categoria}...</div>
+    );
   }
 
   // 5. Renderização Principal
@@ -86,9 +88,7 @@ export default function QuizPerguntas() {
         </div>
 
         <div className="quiz-content">
-          <p className="quiz-subtitle">
-            {perguntas[indiceAtual]?.enunciado}
-          </p>
+          <p className="quiz-subtitle">{perguntas[indiceAtual]?.enunciado}</p>
 
           <div className="quiz-options">
             <button
@@ -123,13 +123,17 @@ export default function QuizPerguntas() {
 
       {showModal && (
         <div className="quiz-modal-overlay">
-          <div className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}>
+          <div
+            className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}
+          >
             <div className="modal-icon">
               {feedback === "correto" ? "✓" : "✕"}
             </div>
 
             <h2 className="modal-title">
-              {feedback === "correto" ? "RESPOSTA CORRETA" : "RESPOSTA INCORRETA"}
+              {feedback === "correto"
+                ? "RESPOSTA CORRETA"
+                : "RESPOSTA INCORRETA"}
             </h2>
 
             <div className="modal-body">

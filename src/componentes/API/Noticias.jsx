@@ -3,15 +3,15 @@ import "./styles.css";
 
 const Noticias = () => {
   const [noticias, setNoticias] = useState([]);
-  const [erro, setErro] = useState(null); 
+  const [erro, setErro] = useState(null);
 
- useEffect(() => {
+  useEffect(() => {
     async function carregarNoticias() {
       try {
         // LIMPAMOS O ERRO AQUI! Assim a mensagem desaparece quando dá certo.
         setErro(null);
 
-        const response = await fetch("http://localhost:8080/api/noticias");
+        const response = await fetch("/api/noticias");
 
         if (!response.ok) {
           throw new Error("Resposta não OK da API do Java");
@@ -26,7 +26,7 @@ const Noticias = () => {
     }
 
     carregarNoticias();
-  }, []); 
+  }, []);
 
   return (
     <div className="noticias-container">
