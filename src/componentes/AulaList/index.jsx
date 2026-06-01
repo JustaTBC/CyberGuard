@@ -1,9 +1,8 @@
 import "./styles.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-// APAGAMOS A IMPORTAÇÃO ANTIGA:
-// import { listPlaylistItems } from "../../services/youtube";
+// Importação do nosso arquivo centralizado
+import { apiFetch } from "../../services/api";
 
 export default function AulasList() {
   const [videos, setVideos] = useState([]);
@@ -16,7 +15,8 @@ export default function AulasList() {
       setLoading(true);
       setErro("");
 
-      const resposta = await fetch(
+      // 👇 A MUDANÇA ACONTECEU AQUI: trocamos fetch por apiFetch
+      const resposta = await apiFetch(
         `/api/aulas?pageToken=${pagina}&maxResults=10`,
       );
 
@@ -112,4 +112,4 @@ export default function AulasList() {
       </div>
     </div>
   );
-}
+}   

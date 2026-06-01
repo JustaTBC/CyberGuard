@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
+import { apiFetch } from "../../services/api"; // Importação adicionada
 import "./styles.css";
 import CardLaranja from "../../componentes/CardLaranja";
-import linkIcon from "./assets/link.png"; // Alterado o nome apenas para não confundir com o <Link> do React
+import linkIcon from "./assets/link.png";
 
 export default function DetectorLink() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function DetectorLink() {
   const [carregando, setCarregando] = useState(false);
 
   const handleAnalisarLink = async (e) => {
-    e.preventDefault(); // Evita que a página salte para o topo ao clicar no link
+    e.preventDefault(); 
 
     if (!urlDigitada.trim()) {
       alert("Por favor, digite um link para analisar!");
@@ -22,19 +23,15 @@ export default function DetectorLink() {
     setCarregando(true);
 
     try {
-      // Faz o POST para a tua API em Java
-      const response = await fetch("/links/verificar", {
+      // Usando o apiFetch no lugar do fetch padrão
+      const response = await apiFetch("/links/verificar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ url: urlDigitada }),
       });
 
       if (response.ok) {
         const dados = await response.json();
 
-        // Verifica a resposta de segurança do backend
         if (dados.seguro) {
           navigate("/DetectorLinkverdadeiro");
         } else {
@@ -78,14 +75,13 @@ export default function DetectorLink() {
               onChange={(e) => setUrlDigitada(e.target.value)}
             />
 
-            {/* O "Botão" disfarçado de Link para manter 100% a estética do teu CSS */}
             <a
               href="#"
               className="link-container"
               onClick={handleAnalisarLink}
               style={{
-                pointerEvents: carregando ? "none" : "auto", // Desativa o clique se estiver a carregar
-                opacity: carregando ? 0.7 : 1, // Dá um efeito visual de carregamento
+                pointerEvents: carregando ? "none" : "auto", 
+                opacity: carregando ? 0.7 : 1, 
               }}
             >
               {carregando ? "A ANALISAR..." : "ANALISAR LINK"}

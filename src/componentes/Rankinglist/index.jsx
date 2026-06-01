@@ -1,100 +1,45 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { apiFetch } from "../../services/api"; // Importação do apiFetch
 import "./styles.css";
 
-const medalhas = {
-  1: "🥇",
-  2: "🥈",
-  3: "🥉",
-};
-
-export default function Rankinglists() {
-  const [jogadores, setJogadores] = useState([]);
+export default function Rankinglist() {
+  const [ranking, setRanking] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    // Busca os dados do seu backend Java
-    fetch("/ranking")
-      .then((response) => response.json())
-      .then((data) => {
-        const jogadoresFormatados = data.map((item, index) => ({
-          id: index + 1,
-          nome: item.nome,
-          pontos: item.pontuacao,
-          foto: `https://ui-avatars.com/api/?name=${item.nome}&background=random`,
-          posicao: index + 1,
-        }));
-
-        // Se o banco estiver vazio, ele cria 6 posições em branco com o traço "—"
-        while (jogadoresFormatados.length < 6) {
-          const nextId = jogadoresFormatados.length + 1;
-          jogadoresFormatados.push({
-            id: nextId,
-            nome: "",
-            pontos: "",
-            foto: "",
-            posicao: nextId,
-          });
+    const carregarRanking = async () => {
+      try {
+        const response = await apiFetch("/ranking"); // Busca a lista do ranking
+        if (response.ok) {
+          const dados = await response.json();
+          setRanking(dados);
+        } else {
+          console.error("Erro ao carregar o ranking");
         }
+      } catch (error) {
+        console.error("Falha na comunicação com a API:", error);
+      } finally {
+        setCarregando(false);
+      }
+    };
 
-        setJogadores(jogadoresFormatados);
-        setCarregando(false);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar o ranking:", error);
-        setCarregando(false);
-      });
+    carregarRanking();
   }, []);
 
-  // Exibe essa mensagem enquanto o React conversa com o Java
-  if (carregando) {
-    return (
-      <h2
-        style={{
-          textAlign: "center",
-          marginTop: "2rem",
-          color: "var(--cor-secundaria)",
-        }}
-      >
-        Carregando Top 10...
-      </h2>
-    );
-  }
+  if (carregando) return <p>A carregar ranking...</p>;
 
   return (
     <div className="ranking-container">
-      <h1 className="ranking-title">Ranking</h1>
-
-      <div className="ranking-list">
-        {jogadores.map((jogador) => (
-          <div key={jogador.id} className="ranking-card">
-            <div className="jogador-esquerda">
-              {jogador.foto ? (
-                <img
-                  src={jogador.foto}
-                  alt={jogador.nome || "Jogador"}
-                  className="avatar"
-                />
-              ) : (
-                <div className="avatar avatar-placeholder" />
-              )}
-
-              <div className="jogador-info">
-                {/* Se não houver nome, mostra o traço "—" */}
-                <p className="jogador-nome">{jogador.nome || "—"}</p>
-                <p className="jogador-pontos">
-                  {jogador.pontos !== ""
-                    ? `${jogador.pontos.toLocaleString()} Pontos`
-                    : ""}
-                </p>
-              </div>
-            </div>
-
-            <div className="medalha">
-              {medalhas[jogador.posicao] || `#${jogador.posicao}`}
-            </div>
-          </div>
+      <h2>Ranking Global</h2>
+      <ul className="ranking-list">
+        {ranking.map((usuario, index) => (
+          <li key={usuario.id} className="ranking-item">
+            <span className="ranking-posicao">{index + 1}º</span>
+            <span className="ranking-nome">{usuario.nome}</span>
+            <span className="ranking-pontos">{usuario.pontuacao} pts</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

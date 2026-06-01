@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../services/api"; // Importação adicionada
 import iconeBoneco from "./assets/iconeBoneco.svg";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
@@ -8,18 +9,15 @@ import "./styles.css";
 export default function RelatarGolpe() {
   const navigate = useNavigate();
 
-  // 1. Estados para guardar o que o usuário digita
   const [tipo, setTipo] = useState("");
   const [boletim, setBoletim] = useState("");
   const [descricao, setDescricao] = useState("");
   const [carregando, setCarregando] = useState(false);
 
-  // 2. Função disparada ao clicar em "Enviar"
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Evita que a página recarregue
+    e.preventDefault(); 
     setCarregando(true);
 
-    // Como o Java só espera titulo e descricao, vamos juntar o BO na descrição
     const descricaoCompleta = boletim
       ? `BO: ${boletim} - ${descricao}`
       : descricao;
@@ -30,17 +28,13 @@ export default function RelatarGolpe() {
     };
 
     try {
-      // 3. Faz o POST para o seu backend Java
-      const response = await fetch("/denuncias", {
+      // Usando o apiFetch no lugar do fetch padrão
+      const response = await apiFetch("/denuncias", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(novaDenuncia),
       });
 
       if (response.ok) {
-        // Se deu sucesso (200), joga para a tela de confirmação
         navigate("/DenunciaEnviada");
       } else {
         alert("Erro ao enviar a denúncia. Tente novamente.");
@@ -69,7 +63,6 @@ export default function RelatarGolpe() {
             />
           </div>
 
-          {/* 4. Transformamos a div num <form> */}
           <form className="Form-Container" onSubmit={handleSubmit}>
             <input
               type="text"
@@ -96,7 +89,6 @@ export default function RelatarGolpe() {
               required
             ></textarea>
 
-            {/* 5. Trocamos o Link por um botão de submissão */}
             <button
               type="submit"
               className="denuncia-btn"

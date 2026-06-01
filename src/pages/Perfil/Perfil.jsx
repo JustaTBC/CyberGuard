@@ -1,98 +1,109 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
+import Header from "../../componentes/Header";
+import { apiFetch } from "../../services/api"; // A nossa função mágica
 import "./styles.css";
-import Certificados from "../../componentes/Certificado_Perfil";
-import Pontuacao from "../../componentes/Pontuacao_Perfil";
+
+// Importe as imagens que você já usa no seu perfil (ajuste os caminhos se necessário)
+import iconePerfil from "../../componentes/Footer/assets/perfil.svg"; 
 
 export default function Perfil() {
   const navigate = useNavigate();
-
-  // 1. Buscamos os dados verdadeiros armazenados no localStorage
-  const [nome, setNome] = useState(localStorage.getItem("usuarioNome") || "Usuário");
-  const [email, setEmail] = useState(localStorage.getItem("usuarioEmail") || "usuario@email.com");
   
-  // Para o nome de usuário, pegamos apenas o primeiro nome como padrão
-  const [usuario, setUsuario] = useState(
-    localStorage.getItem("usuarioNome") ? localStorage.getItem("usuarioNome").split(" ")[0] : "user"
-  );
+  // Estados para guardar os dados vindos do banco de dados
+  const [usuario, setUsuario] = useState({
+    nome: "Carregando...",
+    email: "",
+    pontuacao: 0
+  });
+  const [carregando, setCarregando] = useState(true);
 
-  // 2. Função para limpar os dados ao deslogar da conta
-  const handleLogout = () => {
+  useEffect(() => {
+    // Pegamos o email que foi salvo no login para buscar os dados completos
+    const emailStorage = localStorage.getItem("usuarioEmail");
+
+    if (!emailStorage) {
+      // Se não tem email, o usuário não está logado. Manda pro login.
+      navigate("/login");
+      return;
+    }
+
+    const carregarDadosDoPerfil = async () => {
+      try {
+        // Faz a requisição ao backend buscando o usuário pelo email
+        // Ajuste esta rota "/usuarios/buscar" para a rota correta do seu Spring Boot
+        const response = await apiFetch(`/usuarios/buscar?email=${emailStorage}`, {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const dados = await response.json();
+          setUsuario({
+            nome: dados.nome,
+            email: dados.email,
+            pontuacao: dados.pontuacao || 0
+          });
+        } else {
+          console.error("Erro ao carregar os dados do perfil");
+        }
+      } catch (error) {
+        console.error("Falha na conexão com a API:", error);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    carregarDadosDoPerfil();
+  }, [navigate]);
+
+  const handleSair = () => {
+    // Limpa os dados do navegador e desloga
     localStorage.removeItem("usuarioNome");
     localStorage.removeItem("usuarioEmail");
-    // O React Router guiará o usuário de volta para o login público
+    localStorage.removeItem("usuarioId");
+    navigate("/login");
   };
 
   return (
-    <>
-      <div className="perfil-card">
-        <div className="foto-container">
-          <img
-            src="https://i.pravatar.cc/50?img=2" 
-            alt="Foto de perfil"
-            className="foto-perfil"
-          />
-          <label htmlFor="trocar-foto" className="trocar-foto">
-            Alterar foto
-          </label>
-          <input type="file" id="trocar-foto" accept="image/*" />
-        </div>  
+    <div className="app-shell">
+      <Header />
+      <div className="app-content perfil-content">
         
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label htmlFor="nome">Nome completo</label>
-          <input 
-            type="text" 
-            id="nome" 
-            name="nome" 
-            value={nome} 
-            onChange={(e) => setNome(e.target.value)}
-          />
-
-          <label htmlFor="email">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)}
-            disabled // Deixamos desabilitado para o usuário não alterar o e-mail chave da conta
-          />
-
-          <label htmlFor="usuario">Nome de Usuário</label>
-          <input 
-            type="text" 
-            id="usuario" 
-            name="usuario" 
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
-          />
-
-          <label htmlFor="senha">Senha Atual</label>
-          <input 
-            type="password" 
-            id="senha" 
-            name="senha" 
-            placeholder="********" 
-            disabled 
-          />
-
-          <div className="perfil-links">
-            <Link to="/cadastro" className="link-senha">
-              Alterar senha
-            </Link>
-
-            {/* Injetamos a limpeza de dados antes de redirecionar para o login */}
-            <Link to="/login" className="link-logout" onClick={handleLogout}>
-              Sair da conta
-            </Link>
+        <div className="perfil-header">
+          <div className="perfil-avatar">
+            <img src={iconePerfil} alt="Avatar do usuário" />
           </div>
-        </form> 
+          
+          {carregando ? (
+            <p>A carregar perfil...</p>
+          ) : (
+            <div className="perfil-info">
+              <h2>{usuario.nome}</h2>
+              <p>{usuario.email}</p>
+              <div className="perfil-pontuacao">
+                <span>🏆 Pontos: <strong>{usuario.pontuacao}</strong></span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="perfil-opcoes">
+          <Link to="/meuscertificados" className="btn-perfil-opcao">
+            📜 Meus Certificados
+          </Link>
+          
+          <Link to="/ranking" className="btn-perfil-opcao">
+            📊 Ver Ranking
+          </Link>
+          
+          <button onClick={handleSair} className="btn-sair">
+            Sair da Conta
+          </button>
+        </div>
+
       </div>
-      
-      <Certificados />
-      <Pontuacao />
       <Footer />
-    </>
+    </div>
   );
 }

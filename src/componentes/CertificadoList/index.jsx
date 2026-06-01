@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./styles.css";
 import logo from "./assets/certificLogo.svg";
 import { Link } from "react-router-dom";
+// 👇 1. Adicionamos a importação do apiFetch
+import { apiFetch } from "../../services/api";
 
 export default function CertificadosList() {
   const [certificados, setCertificados] = useState([]);
@@ -10,7 +12,8 @@ export default function CertificadosList() {
   useEffect(() => {
     const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
 
-    fetch(`http://localhost:8080/api/certificados/${emailUsuario}`)
+    // 👇 2. Removemos o localhost e usamos apenas a rota final com apiFetch
+    apiFetch(`/api/certificados/${emailUsuario}`)
       .then((res) => res.json())
       .then((data) => {
         setCertificados(data);

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
+import { apiFetch } from "../../services/api"; // Importação adicionada
 import "./styles.css";
 import quizIcon from "./assets/quiz.svg";
 import CardLaranja from "../../componentes/CardLaranja";
@@ -10,7 +11,6 @@ export default function QuizPerguntas() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Definição dos Estados
   const queryParams = new URLSearchParams(location.search);
   const categoria = queryParams.get("categoria") || "seguranca";
 
@@ -22,11 +22,11 @@ export default function QuizPerguntas() {
   const [showModal, setShowModal] = useState(false);
   const [respostasUsuario, setRespostasUsuario] = useState([]);
 
-  // 2. Carregar perguntas do Backend
-useEffect(() => {
+  useEffect(() => {
     setCarregando(true);
-    // 👇 ADICIONADO: O link completo do seu Render antes da rota do quiz
-    fetch(`https://cyberguard-backend-2rrx.onrender.com/quiz?categoria=${categoria}`)
+    
+    // Usando o apiFetch no lugar do fetch padrão com URL hardcoded
+    apiFetch(`/quiz?categoria=${categoria}`)
       .then((response) => response.json())
       .then((data) => {
         setPerguntas(data);
@@ -38,13 +38,11 @@ useEffect(() => {
       });
   }, [categoria]);
 
-  // 3. Funções de Lógica
   const handleConfirm = () => {
     const isCorrect = selectedId === perguntas[indiceAtual].respostaCorreta;
     setFeedback(isCorrect ? "correto" : "incorreto");
     setShowModal(true);
 
-    // Adiciona a resposta atual ao array de respostas acumuladas
     setRespostasUsuario((prev) => [...prev, selectedId]);
   };
 
@@ -59,7 +57,6 @@ useEffect(() => {
       setIndiceAtual(indiceAtual + 1);
       closeModal();
     } else {
-      // Envia as respostas e a categoria para o FimQuiz
       navigate("/fimquiz", {
         state: {
           respostas: respostasUsuario,
@@ -69,14 +66,12 @@ useEffect(() => {
     }
   };
 
-  // 4. Renderização Condicional (Loading)
   if (carregando) {
     return (
       <div className="loading">Carregando perguntas de {categoria}...</div>
     );
   }
 
-  // 5. Renderização Principal
   return (
     <>
       <Header />

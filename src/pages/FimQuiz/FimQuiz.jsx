@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+// 👇 1. Adicionamos a importação do apiFetch
+import { apiFetch } from "../../services/api";
+
 import iconeContorno from "./assets/iconeContorno.svg";
 import iconePesquisa from "./assets/iconePesquisa.svg";
 import Footer from "../../componentes/Footer";
@@ -24,13 +27,10 @@ export default function FimQuiz() {
     // 1. Recuperar o e-mail do utilizador que foi guardado no Login
     const emailDoUsuario = localStorage.getItem("usuarioEmail");
 
-    // Fazemos o POST a enviar a categoria na URL para o Java filtrar o gabarito
-    fetch(`/quiz/responder?categoria=${categoriaQuiz}`, {
+    // 👇 2. Trocamos "fetch" por "apiFetch" e removemos o bloco de headers (o api.js já faz isso)
+    apiFetch(`/quiz/responder?categoria=${categoriaQuiz}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // 2. Adicionamos o emailUsuario ao corpo da requisição (body) para o Java o conseguir identificar
+      // Adicionamos o emailUsuario ao corpo da requisição (body) para o Java o conseguir identificar
       body: JSON.stringify({
         respostas: respostasDoQuiz,
         emailUsuario: emailDoUsuario,

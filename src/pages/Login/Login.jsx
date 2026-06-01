@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { apiFetch } from "../../services/api"; // Importação adicionada
 import "./styles.css";
 import logoImg from "./assets/logo.png";
 // Se você tiver o ícone do google, importe aqui:
@@ -19,11 +20,9 @@ export default function Login() {
     setCarregando(true);
 
     try {
-      const response = await fetch("/usuarios/login", {
+      // Usando o apiFetch no lugar do fetch padrão
+      const response = await apiFetch("/usuarios/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ email, senha }),
       });
 
@@ -49,7 +48,6 @@ export default function Login() {
   return (
     <div className="cadastro-container">
       <div className="cadastro-card">
-        {/* Usando a classe logo-login do seu CSS */}
         <img src={logoImg} alt="CyberGuard Logo" className="logo-login" />
 
         {erro && (
@@ -83,10 +81,7 @@ export default function Login() {
             {carregando ? "Processando..." : "Entrar"}
           </button>
 
-          {/* Botão do Google que você estilizou no CSS */}
-          {/* Descomente a imagem se você importou o ícone lá em cima */}
           <button type="button" className="btn-cadastrar-google">
-            {/* <img src={googleIcon} alt="Google" /> */}
             Entrar com Google
           </button>
         </form>

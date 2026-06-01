@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
+import { apiFetch } from "../../services/api"; // Importação adicionada
 import Logo from "./assets/lococomunidade4.png";
 import "./styles.css";
 
@@ -17,15 +18,12 @@ export default function NovaPostagem() {
       return;
     }
 
-
     const logadoId = localStorage.getItem("usuarioId") || 1;
 
     try {
-      const response = await fetch("/api/postagens", {
+      // Usando o apiFetch no lugar do fetch padrão
+      const response = await apiFetch("/api/postagens", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           conteudo: conteudo,
           autor: {
@@ -42,7 +40,7 @@ export default function NovaPostagem() {
         );
       }
     } catch (error) {
-      console.error("Erro na requisição de nova nova postagem:", error);
+      console.error("Erro na requisição de nova postagem:", error);
       alert("Não foi possível conectar ao servidor.");
     }
   };
