@@ -17,9 +17,7 @@ export default function NovaPostagem() {
       return;
     }
 
-    // 🎯 CAPTURA O SEU ID REAL:
-    // Lemos a chave 'usuarioId' que vimos brilhando no F12 (Inspecionar).
-    // Se por acaso não achar nada, ele usa o 1 de fallback para não quebrar.
+
     const logadoId = localStorage.getItem("usuarioId") || 1;
 
     try {
@@ -31,7 +29,7 @@ export default function NovaPostagem() {
         body: JSON.stringify({
           conteudo: conteudo,
           autor: {
-            id: Number(logadoId), // Garante que o ID vai como número para o Java
+            id: Number(logadoId),
           },
         }),
       });
