@@ -35,6 +35,7 @@ export default function Login() {
 
       localStorage.setItem("usuarioNome", usuario.nome);
       localStorage.setItem("usuarioEmail", usuario.email);
+      localStorage.setItem("usuarioId", usuario.id);
 
       alert(`Bem-vindo, ${usuario.nome}!`);
 
