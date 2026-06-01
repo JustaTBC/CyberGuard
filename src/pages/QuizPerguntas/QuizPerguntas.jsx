@@ -23,9 +23,10 @@ export default function QuizPerguntas() {
   const [respostasUsuario, setRespostasUsuario] = useState([]);
 
   // 2. Carregar perguntas do Backend
-  useEffect(() => {
+useEffect(() => {
     setCarregando(true);
-    fetch(`/quiz?categoria=${categoria}`)
+    // 👇 ADICIONADO: O link completo do seu Render antes da rota do quiz
+    fetch(`https://cyberguard-backend-2rrx.onrender.com/quiz?categoria=${categoria}`)
       .then((response) => response.json())
       .then((data) => {
         setPerguntas(data);
