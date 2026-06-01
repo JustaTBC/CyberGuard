@@ -138,3 +138,73 @@
   text-decoration: none;
   color: inherit;
 }
+
+/* Estilos para o alinhamento do cabeçalho da postagem */
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    margin-right: 5%;
+}
+
+/* Botões discretos de ícone */
+.btn-icon-edit, .btn-icon-delete {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: transform 0.1s ease;
+}
+
+.btn-icon-edit:hover, .btn-icon-delete:hover {
+    transform: scale(1.2);
+}
+
+/* Caixa de edição quando clicado no lápis */
+.edit-box-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 10px 5% 10px 0;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 60px;
+    border-radius: 6px;
+    border: 1px solid rgba(67, 102, 244, 0.4);
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.edit-box-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-cancel {
+    background: #777;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.post-text-content {
+    white-space: pre-wrap; /* Garante que quebras de linha funcionem na tela */
+}

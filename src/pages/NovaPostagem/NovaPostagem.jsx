@@ -1,39 +1,83 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
 import Logo from "./assets/lococomunidade4.png";
 import "./styles.css";
 
+export default function NovaPostagem() {
+  const [conteudo, setConteudo] = useState("");
+  const navigate = useNavigate();
 
-export default function NovaPostagem(){
-    return (
+  const handlePostar = async (e) => {
+    e.preventDefault();
 
-        <div className="app-fundo-br">
-            <Header />
-            <img src={Logo} alt='Logo da Comunidade' className="logoTopo"/>
-            <div className="app-content">
+    if (!conteudo.trim()) {
+      alert("Por favor, escreva alguma coisa antes de postar!");
+      return;
+    }
 
-                
-                <p className="texto-comunidade">
-                    Compartilhe uma postagem com a comunidade:
-                </p>
+    // 🎯 CAPTURA O SEU ID REAL:
+    // Lemos a chave 'usuarioId' que vimos brilhando no F12 (Inspecionar).
+    // Se por acaso não achar nada, ele usa o 1 de fallback para não quebrar.
+    const logadoId = localStorage.getItem("usuarioId") || 1;
 
-                
-                <textarea
-                    className="campo-postagem"
-                    placeholder="Escreva sua postagem aqui..."
-                />
+    try {
+      const response = await fetch("/api/postagens", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conteudo: conteudo,
+          autor: {
+            id: Number(logadoId), // Garante que o ID vai como número para o Java
+          },
+        }),
+      });
 
-                <Link to={'/comunidade'} className="botaoComunidade">Postar Agora</Link>
+      if (response.ok) {
+        navigate("/comunidade");
+      } else {
+        alert(
+          "Erro ao salvar a postagem no servidor. Status: " + response.status,
+        );
+      }
+    } catch (error) {
+      console.error("Erro na requisição de nova nova postagem:", error);
+      alert("Não foi possível conectar ao servidor.");
+    }
+  };
 
+  return (
+    <div className="app-fundo-br">
+      <Header />
+      <img src={Logo} alt="Logo da Comunidade" className="logoTopo" />
+      <div className="app-content">
+        <p className="texto-comunidade">
+          Compartilhe uma postagem com a comunidade:
+        </p>
 
-                <Link className="Sair" to={'/comunidade'}> Cancelar </Link>
+        <textarea
+          className="campo-postagem"
+          placeholder="Escreva sua postagem aqui..."
+          value={conteudo}
+          onChange={(e) => setConteudo(e.target.value)}
+        />
 
+        <button
+          onClick={handlePostar}
+          className="botaoComunidade"
+          style={{ border: "none", cursor: "pointer" }}
+        >
+          Postar Agora
+        </button>
 
-            </div>
-            <Footer />
-        </div>
- 
-
-    )
+        <Link className="Sair" to={"/comunidade"}>
+          Cancelar
+        </Link>
+      </div>
+      <Footer />
+    </div>
+  );
 }
