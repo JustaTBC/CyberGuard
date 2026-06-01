@@ -15,6 +15,10 @@
     {
       "source": "/denuncias/:path*",
       "destination": "https://cyberguard-backend-2rrx.onrender.com/denuncias/:path*"
+    },
+    {
+      "source": "/((?!api|usuarios|ranking|denuncias).*)" ,
+      "destination": "/index.html"
     }
   ]
 }
