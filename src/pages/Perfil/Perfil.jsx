@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
-import Header from "../../componentes/Header";
-import { apiFetch } from "../../services/api"; 
+import Header from "../../componentes/Header"; // Certifique-se de manter o Header se desejar
+import { apiFetch } from "../../services/api";
 import "./styles.css";
-import iconePerfil from "../../componentes/Footer/assets/perfil.svg"; 
+import Certificados from "../../componentes/Certificado_Perfil";
+import Pontuacao from "../../componentes/Pontuacao_Perfil";
 
 export default function Perfil() {
   const navigate = useNavigate();
-  
+
+  // Estados de dados do usuário
   const [usuario, setUsuario] = useState({
-    nome: "Carregando...",
+    nome: "",
     email: "",
-    pontuacao: 0
+    username: ""
   });
   const [carregando, setCarregando] = useState(true);
 
+  // 1. Busca os dados no banco ao carregar a página
   useEffect(() => {
     const emailStorage = localStorage.getItem("usuarioEmail");
 
@@ -26,13 +29,11 @@ export default function Perfil() {
 
     const carregarDadosDoPerfil = async () => {
       try {
-        // O apiFetch já resolve a URL e devolve os dados prontos
         const dados = await apiFetch(`/usuarios/buscar?email=${emailStorage}`);
-        
         setUsuario({
-          nome: dados.nome,
-          email: dados.email,
-          pontuacao: dados.pontuacao || 0
+          nome: dados.nome || "",
+          email: dados.email || "",
+          username: dados.nome ? dados.nome.split(" ")[0] : "user"
         });
       } catch (error) {
         console.error("Falha ao carregar perfil:", error);
@@ -44,52 +45,80 @@ export default function Perfil() {
     carregarDadosDoPerfil();
   }, [navigate]);
 
-  const handleSair = () => {
+  // 2. Função para sair da conta
+  const handleLogout = () => {
     localStorage.removeItem("usuarioNome");
     localStorage.removeItem("usuarioEmail");
     localStorage.removeItem("usuarioId");
     navigate("/login");
   };
 
+  if (carregando) return <div className="app-shell">Carregando perfil...</div>;
+
   return (
-    <div className="app-shell">
+    <>
       <Header />
-      <div className="app-content perfil-content">
+      <div className="perfil-card">
+        <div className="foto-container">
+          <img
+            src="https://i.pravatar.cc/50?img=2" 
+            alt="Foto de perfil"
+            className="foto-perfil"
+          />
+          <label htmlFor="trocar-foto" className="trocar-foto">
+            Alterar foto
+          </label>
+          <input type="file" id="trocar-foto" accept="image/*" />
+        </div>  
         
-        <div className="perfil-header">
-          <div className="perfil-avatar">
-            <img src={iconePerfil} alt="Avatar do usuário" />
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label htmlFor="nome">Nome completo</label>
+          <input 
+            type="text" 
+            id="nome" 
+            value={usuario.nome} 
+            readOnly // Deixamos apenas leitura se o backend não permitir edição ainda
+          />
+
+          <label htmlFor="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            value={usuario.email}
+            disabled 
+          />
+
+          <label htmlFor="usuario">Nome de Usuário</label>
+          <input 
+            type="text" 
+            id="usuario" 
+            value={usuario.username}
+            readOnly
+          />
+
+          <label htmlFor="senha">Senha Atual</label>
+          <input 
+            type="password" 
+            id="senha" 
+            placeholder="********" 
+            disabled 
+          />
+
+          <div className="perfil-links">
+            <Link to="/cadastro" className="link-senha">
+              Alterar senha
+            </Link>
+
+            <Link to="/login" className="link-logout" onClick={handleLogout}>
+              Sair da conta
+            </Link>
           </div>
-          
-          {carregando ? (
-            <p>A carregar perfil...</p>
-          ) : (
-            <div className="perfil-info">
-              <h2>{usuario.nome}</h2>
-              <p>{usuario.email}</p>
-              <div className="perfil-pontuacao">
-                <span>🏆 Pontos: <strong>{usuario.pontuacao}</strong></span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="perfil-opcoes">
-          <Link to="/meuscertificados" className="btn-perfil-opcao">
-            📜 Meus Certificados
-          </Link>
-          
-          <Link to="/ranking" className="btn-perfil-opcao">
-            📊 Ver Ranking
-          </Link>
-          
-          <button onClick={handleSair} className="btn-sair">
-            Sair da Conta
-          </button>
-        </div>
-
+        </form> 
       </div>
+      
+      <Certificados />
+      <Pontuacao />
       <Footer />
-    </div>
+    </>
   );
 }
