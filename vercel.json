@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://cyberguard-backend-2rrx.onrender.com/api/:path*"
+    },
+    {
+      "source": "/usuarios/:path*",
+      "destination": "https://cyberguard-backend-2rrx.onrender.com/usuarios/:path*"
+    },
+    {
+      "source": "/ranking/:path*",
+      "destination": "https://cyberguard-backend-2rrx.onrender.com/ranking/:path*"
+    },
+    {
+      "source": "/denuncias/:path*",
+      "destination": "https://cyberguard-backend-2rrx.onrender.com/denuncias/:path*"
+    }
+  ]
+}
