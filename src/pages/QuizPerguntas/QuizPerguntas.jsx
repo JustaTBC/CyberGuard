@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 import quizIcon from "./assets/quiz.svg";
 import CardLaranja from "../../componentes/CardLaranja";
@@ -23,19 +23,20 @@ export default function QuizPerguntas() {
   const [respostasUsuario, setRespostasUsuario] = useState([]);
 
   useEffect(() => {
-    setCarregando(true);
-    
-    // Usando o apiFetch no lugar do fetch padrão com URL hardcoded
-    apiFetch(`/quiz?categoria=${categoria}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPerguntas(data);
-        setCarregando(false);
-      })
-      .catch((error) => {
+    const carregarPerguntas = async () => {
+      setCarregando(true);
+      try {
+        // O apiFetch já faz o fetch e converte para JSON automaticamente
+        const dados = await apiFetch(`/quiz?categoria=${categoria}`);
+        setPerguntas(dados);
+      } catch (error) {
         console.error("Erro ao buscar perguntas:", error);
+      } finally {
         setCarregando(false);
-      });
+      }
+    };
+
+    carregarPerguntas();
   }, [categoria]);
 
   const handleConfirm = () => {
@@ -43,7 +44,9 @@ export default function QuizPerguntas() {
     setFeedback(isCorrect ? "correto" : "incorreto");
     setShowModal(true);
 
-    setRespostasUsuario((prev) => [...prev, selectedId]);
+    if (isCorrect) {
+      setRespostasUsuario((prev) => [...prev, selectedId]);
+    }
   };
 
   const closeModal = () => {
@@ -68,7 +71,9 @@ export default function QuizPerguntas() {
 
   if (carregando) {
     return (
-      <div className="loading">Carregando perguntas de {categoria}...</div>
+      <div className="loading" style={{ textAlign: "center", padding: "50px" }}>
+        Carregando perguntas de {categoria}...
+      </div>
     );
   }
 
@@ -119,45 +124,27 @@ export default function QuizPerguntas() {
 
       {showModal && (
         <div className="quiz-modal-overlay">
-          <div
-            className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}
-          >
-            <div className="modal-icon">
-              {feedback === "correto" ? "✓" : "✕"}
-            </div>
-
+          <div className={`quiz-modal ${feedback === "correto" ? "correct" : "incorrect"}`}>
+            <div className="modal-icon">{feedback === "correto" ? "✓" : "✕"}</div>
             <h2 className="modal-title">
-              {feedback === "correto"
-                ? "RESPOSTA CORRETA"
-                : "RESPOSTA INCORRETA"}
+              {feedback === "correto" ? "RESPOSTA CORRETA" : "RESPOSTA INCORRETA"}
             </h2>
-
             <div className="modal-body">
               <strong>Explicação:</strong>
               <p>{perguntas[indiceAtual]?.explicacao}</p>
             </div>
-
             {feedback === "incorreto" ? (
-              <button
-                type="button"
-                className="modal-next modal-next--danger"
-                onClick={closeModal}
-              >
+              <button type="button" className="modal-next modal-next--danger" onClick={closeModal}>
                 Tentar novamente
               </button>
             ) : (
-              <button
-                type="button"
-                className="modal-next modal-next--primary"
-                onClick={handleNext}
-              >
+              <button type="button" className="modal-next modal-next--primary" onClick={handleNext}>
                 {indiceAtual === perguntas.length - 1 ? "Finalizar" : "Próxima"}
               </button>
             )}
           </div>
         </div>
       )}
-
       <Footer />
     </>
   );

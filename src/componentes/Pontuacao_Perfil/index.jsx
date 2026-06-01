@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
+// 1. Importação necessária
+import { apiFetch } from "../../services/api";
 
 const Pontuacao = () => {
-  // Pegamos o Nome e o E-mail de quem fez o login
   const nomeUsuarioLogado = localStorage.getItem("usuarioNome") || "Usuário";
   const emailUsuarioLogado = localStorage.getItem("usuarioEmail");
 
@@ -10,23 +11,26 @@ const Pontuacao = () => {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    // Se por acaso não tiver ninguém logado, nem tenta buscar
-    if (!emailUsuarioLogado) {
-      setCarregando(false);
-      return;
-    }
+    const carregarPontuacao = async () => {
+      // Se não tiver e-mail logado, não chamamos a API
+      if (!emailUsuarioLogado) {
+        setCarregando(false);
+        return;
+      }
 
-    // Chama a nossa ROTA NOVA do Java passando o e-mail na URL
-    fetch(`/ranking/pontuacao?email=${emailUsuarioLogado}`)
-      .then((response) => response.json())
-      .then((pontuacaoExata) => {
-        setPontos(pontuacaoExata); // Salva a pontuação exata na tela
-        setCarregando(false);
-      })
-      .catch((error) => {
+      try {
+        // 2. Usamos o apiFetch com a rota correta. 
+        // Verifique se o seu RankingController usa /api/ranking ou apenas /ranking
+        const pontuacaoExata = await apiFetch(`/ranking/pontuacao?email=${emailUsuarioLogado}`);
+        setPontos(pontuacaoExata);
+      } catch (error) {
         console.error("Erro ao buscar a pontuação do usuário:", error);
+      } finally {
         setCarregando(false);
-      });
+      }
+    };
+
+    carregarPontuacao();
   }, [emailUsuarioLogado]);
 
   return (

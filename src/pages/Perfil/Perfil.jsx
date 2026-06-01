@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import { apiFetch } from "../../services/api"; // A nossa função mágica
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
-
-// Importe as imagens que você já usa no seu perfil (ajuste os caminhos se necessário)
 import iconePerfil from "../../componentes/Footer/assets/perfil.svg"; 
 
 export default function Perfil() {
   const navigate = useNavigate();
   
-  // Estados para guardar os dados vindos do banco de dados
   const [usuario, setUsuario] = useState({
     nome: "Carregando...",
     email: "",
@@ -20,35 +17,25 @@ export default function Perfil() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    // Pegamos o email que foi salvo no login para buscar os dados completos
     const emailStorage = localStorage.getItem("usuarioEmail");
 
     if (!emailStorage) {
-      // Se não tem email, o usuário não está logado. Manda pro login.
       navigate("/login");
       return;
     }
 
     const carregarDadosDoPerfil = async () => {
       try {
-        // Faz a requisição ao backend buscando o usuário pelo email
-        // Ajuste esta rota "/usuarios/buscar" para a rota correta do seu Spring Boot
-        const response = await apiFetch(`/usuarios/buscar?email=${emailStorage}`, {
-          method: "GET",
+        // O apiFetch já resolve a URL e devolve os dados prontos
+        const dados = await apiFetch(`/usuarios/buscar?email=${emailStorage}`);
+        
+        setUsuario({
+          nome: dados.nome,
+          email: dados.email,
+          pontuacao: dados.pontuacao || 0
         });
-
-        if (response.ok) {
-          const dados = await response.json();
-          setUsuario({
-            nome: dados.nome,
-            email: dados.email,
-            pontuacao: dados.pontuacao || 0
-          });
-        } else {
-          console.error("Erro ao carregar os dados do perfil");
-        }
       } catch (error) {
-        console.error("Falha na conexão com a API:", error);
+        console.error("Falha ao carregar perfil:", error);
       } finally {
         setCarregando(false);
       }
@@ -58,7 +45,6 @@ export default function Perfil() {
   }, [navigate]);
 
   const handleSair = () => {
-    // Limpa os dados do navegador e desloga
     localStorage.removeItem("usuarioNome");
     localStorage.removeItem("usuarioEmail");
     localStorage.removeItem("usuarioId");

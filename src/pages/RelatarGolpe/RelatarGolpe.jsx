@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import iconeBoneco from "./assets/iconeBoneco.svg";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
@@ -28,20 +28,17 @@ export default function RelatarGolpe() {
     };
 
     try {
-      // Usando o apiFetch no lugar do fetch padrão
-      const response = await apiFetch("/denuncias", {
+      // O apiFetch envia o POST e já converte a resposta para JSON ou lança erro.
+      await apiFetch("/denuncias", {
         method: "POST",
         body: JSON.stringify(novaDenuncia),
       });
 
-      if (response.ok) {
-        navigate("/DenunciaEnviada");
-      } else {
-        alert("Erro ao enviar a denúncia. Tente novamente.");
-      }
+      // Se não houve erro, a denúncia foi enviada com sucesso
+      navigate("/DenunciaEnviada");
     } catch (error) {
       console.error("Erro na requisição:", error);
-      alert("Falha ao comunicar com o servidor.");
+      alert("Falha ao comunicar com o servidor: " + error.message);
     } finally {
       setCarregando(false);
     }

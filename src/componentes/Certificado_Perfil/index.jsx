@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./styles.css";
-// Troquei o import para garantir que a imagem funciona corretamente no .map
+// 1. Importação necessária do nosso serviço otimizado
+import { apiFetch } from "../../services/api"; 
 import iconeCertificado from "./assets/certificLogo.svg";
 
 const Certificados = () => {
   const [certificados, setCertificados] = useState([]);
 
-useEffect(() => {
-    const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
+  useEffect(() => {
+    const carregarCertificadosPerfil = async () => {
+      const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
 
-    fetch(`http://localhost:8080/api/certificados/${emailUsuario}`)
-      .then((res) => res.json())
-      .then((data) => {
+      try {
+        // 2. Usamos o apiFetch, que já resolve a URL e o .json()
+        const data = await apiFetch(`/api/certificados/${emailUsuario}`);
         setCertificados(data);
-      })
-      .catch((error) => console.error("Erro ao buscar certificados do perfil:", error));
+      } catch (error) {
+        console.error("Erro ao buscar certificados do perfil:", error);
+      }
+    };
+
+    carregarCertificadosPerfil();
   }, []);
 
   return (

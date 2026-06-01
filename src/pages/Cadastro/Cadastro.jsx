@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 
 export default function Cadastro() {
@@ -31,8 +31,8 @@ export default function Cadastro() {
     }
 
     try {
-      // Usando o apiFetch no lugar do fetch padrão
-      const response = await apiFetch("/usuarios/register", {
+      // 1. O apiFetch já processa o JSON e trata erros de status (4xx/5xx)
+      await apiFetch("/usuarios/register", {
         method: "POST",
         body: JSON.stringify({
           nome: formData.nome,
@@ -41,16 +41,14 @@ export default function Cadastro() {
         }),
       });
 
-      if (response.ok) {
-        alert("Cadastro realizado com sucesso!");
-        navigate("/login");
-      } else {
-        const errorData = await response.text();
-        alert("Erro ao cadastrar: " + errorData);
-      }
+      // 2. Se não deu erro no catch, o cadastro foi um sucesso
+      alert("Cadastro realizado com sucesso!");
+      navigate("/login");
+      
     } catch (err) {
-      console.error("Erro na conexão:", err);
-      alert("Não foi possível conectar ao servidor backend.");
+      // 3. O catch captura qualquer erro enviado pelo backend
+      console.error("Erro no cadastro:", err);
+      alert("Erro ao cadastrar: " + err.message);
     }
   };
 
@@ -61,62 +59,23 @@ export default function Cadastro() {
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="nome">Nome completo</label>
-          <input
-            type="text"
-            id="nome"
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
 
           <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
 
           <label htmlFor="usuario">Nome de Usuário</label>
-          <input
-            type="text"
-            id="usuario"
-            name="usuario"
-            value={formData.usuario}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" id="usuario" name="usuario" value={formData.usuario} onChange={handleChange} required />
 
           <label htmlFor="senha">Criar senha</label>
-          <input
-            type="password"
-            id="senha"
-            name="senha"
-            value={formData.senha}
-            onChange={handleChange}
-            required
-          />
+          <input type="password" id="senha" name="senha" value={formData.senha} onChange={handleChange} required />
 
           <label htmlFor="confirmar">Confirmar senha</label>
-          <input
-            type="password"
-            id="confirmar"
-            name="confirmar"
-            value={formData.confirmar}
-            onChange={handleChange}
-            required
-          />
+          <input type="password" id="confirmar" name="confirmar" value={formData.confirmar} onChange={handleChange} required />
 
-          <button type="submit" className="btn-cadastrar">
-            Cadastrar
-          </button>
+          <button type="submit" className="btn-cadastrar">Cadastrar</button>
 
-          <Link to={"/login"} className="link-login">
-            Possuo cadastro &gt;
-          </Link>
+          <Link to={"/login"} className="link-login">Possuo cadastro &gt;</Link>
         </form>
       </div>
     </div>

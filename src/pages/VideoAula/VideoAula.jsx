@@ -4,7 +4,7 @@ import YouTube from "react-youtube";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
 import DeviceMockup from "../../layout/DeviceMockup";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 
 export default function VideoAula() {
@@ -15,22 +15,25 @@ export default function VideoAula() {
 
   const [aulaConcluida, setAulaConcluida] = useState(false);
 
-  const handleVideoTerminou = () => {
+  const handleVideoTerminou = async () => {
     setAulaConcluida(true);
 
     const email = localStorage.getItem("usuarioEmail");
 
     if (email) {
-      // Usando o apiFetch no lugar do fetch padrão
-      apiFetch("/api/progresso/concluir", {
-        method: "POST",
-        body: JSON.stringify({
-          emailUsuario: email,
-          videoId: id,
-        }),
-      })
-        .then(() => console.log("Progresso salvo no banco!"))
-        .catch((erro) => console.error("Erro ao salvar progresso", erro));
+      try {
+        // Usamos o apiFetch que já trata a URL do Render e o JSON automaticamente
+        await apiFetch("/api/progresso/concluir", {
+          method: "POST",
+          body: JSON.stringify({
+            emailUsuario: email,
+            videoId: id,
+          }),
+        });
+        console.log("Progresso salvo no banco com sucesso!");
+      } catch (erro) {
+        console.error("Erro ao salvar progresso:", erro);
+      }
     }
   };
 

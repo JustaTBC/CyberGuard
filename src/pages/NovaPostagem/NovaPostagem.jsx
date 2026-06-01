@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import Logo from "./assets/lococomunidade4.png";
 import "./styles.css";
 
@@ -21,8 +21,8 @@ export default function NovaPostagem() {
     const logadoId = localStorage.getItem("usuarioId") || 1;
 
     try {
-      // Usando o apiFetch no lugar do fetch padrão
-      const response = await apiFetch("/api/postagens", {
+      // O apiFetch já faz o POST e retorna o resultado ou lança exceção se houver erro
+      await apiFetch("/api/postagens", {
         method: "POST",
         body: JSON.stringify({
           conteudo: conteudo,
@@ -32,16 +32,12 @@ export default function NovaPostagem() {
         }),
       });
 
-      if (response.ok) {
-        navigate("/comunidade");
-      } else {
-        alert(
-          "Erro ao salvar a postagem no servidor. Status: " + response.status,
-        );
-      }
+      // Se chegar aqui, a postagem foi salva com sucesso
+      navigate("/comunidade");
+      
     } catch (error) {
       console.error("Erro na requisição de nova postagem:", error);
-      alert("Não foi possível conectar ao servidor.");
+      alert("Não foi possível salvar a postagem: " + error.message);
     }
   };
 

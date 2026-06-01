@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 import logoImg from "./assets/logo.png";
-// Se você tiver o ícone do google, importe aqui:
-// import googleIcon from "./assets/google.svg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,25 +18,22 @@ export default function Login() {
     setCarregando(true);
 
     try {
-      // Usando o apiFetch no lugar do fetch padrão
-      const response = await apiFetch("/usuarios/login", {
+      // 1. Chamada simplificada: O apiFetch já retorna os dados do usuário (JSON)
+      // ou lança uma exceção se a resposta não for 2xx.
+      const usuario = await apiFetch("/usuarios/login", {
         method: "POST",
         body: JSON.stringify({ email, senha }),
       });
 
-      if (!response.ok) {
-        throw new Error("E-mail ou senha incorretos");
-      }
-
-      const usuario = await response.json();
-
+      // 2. Se a execução chegou aqui, o login foi bem-sucedido
       localStorage.setItem("usuarioNome", usuario.nome);
       localStorage.setItem("usuarioEmail", usuario.email);
 
       alert(`Bem-vindo, ${usuario.nome}!`);
-
       navigate("/");
+      
     } catch (err) {
+      // 3. O erro lançado pelo apiFetch é capturado aqui
       setErro(err.message || "Erro ao conectar com o servidor.");
     } finally {
       setCarregando(false);
@@ -51,9 +46,7 @@ export default function Login() {
         <img src={logoImg} alt="CyberGuard Logo" className="logo-login" />
 
         {erro && (
-          <div
-            style={{ color: "#e74c3c", marginBottom: "10px", fontSize: "14px" }}
-          >
+          <div style={{ color: "#e74c3c", marginBottom: "10px", fontSize: "14px" }}>
             {erro}
           </div>
         )}

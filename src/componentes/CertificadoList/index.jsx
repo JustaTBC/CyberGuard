@@ -1,8 +1,9 @@
+// src/componentes/CertificadoList/index.jsx
+
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import logo from "./assets/certificLogo.svg";
 import { Link } from "react-router-dom";
-// 👇 1. Adicionamos a importação do apiFetch
 import { apiFetch } from "../../services/api";
 
 export default function CertificadosList() {
@@ -10,19 +11,21 @@ export default function CertificadosList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
+    const carregarCertificados = async () => {
+      const emailUsuario = localStorage.getItem("usuarioEmail") || "email@exemplo.com";
 
-    // 👇 2. Removemos o localhost e usamos apenas a rota final com apiFetch
-    apiFetch(`/api/certificados/${emailUsuario}`)
-      .then((res) => res.json())
-      .then((data) => {
+      try {
+        // Como o apiFetch já retorna os dados (JSON), não precisamos do .json()
+        const data = await apiFetch(`/api/certificados/${emailUsuario}`);
         setCertificados(data);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Erro ao buscar certificados:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    carregarCertificados();
   }, []);
 
   if (loading) {
@@ -39,7 +42,6 @@ export default function CertificadosList() {
         <Link 
             key={c.id} 
             to={`/certificado/${c.id}`}
-            // Passamos o 'nome' do certificado (ex: "Certificado 1") como state para a próxima página
             state={{ titulo: c.nome }} 
             className="cert-item"
         >

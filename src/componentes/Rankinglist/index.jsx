@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiFetch } from "../../services/api"; // Importação do apiFetch
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 
 export default function Rankinglist() {
@@ -9,13 +9,9 @@ export default function Rankinglist() {
   useEffect(() => {
     const carregarRanking = async () => {
       try {
-        const response = await apiFetch("/ranking"); // Busca a lista do ranking
-        if (response.ok) {
-          const dados = await response.json();
-          setRanking(dados);
-        } else {
-          console.error("Erro ao carregar o ranking");
-        }
+        // O apiFetch já devolve os dados (JSON) prontos para uso
+        const dados = await apiFetch("/ranking"); 
+        setRanking(dados);
       } catch (error) {
         console.error("Falha na comunicação com a API:", error);
       } finally {

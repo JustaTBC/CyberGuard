@@ -2,7 +2,7 @@ import { useState } from "react";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
 import DeviceMockup from "../../layout/DeviceMockup"; 
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css"; 
 import iconeTelefone from './assets/iconeTelefone.svg';
 import iconeEmail from './assets/iconeEmail.svg';
@@ -12,7 +12,6 @@ export default function FaleConosco() {
   const [mensagem, setMensagem] = useState("");
   const [status, setStatus] = useState("");
   const [carregando, setCarregando] = useState(false);
-  
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -24,8 +23,8 @@ export default function FaleConosco() {
     const emailUsuario = localStorage.getItem("usuarioEmail") || "email@nao-encontrado.com";
 
     try {
-      // Substituído o localhost manual pelo apiFetch, que usa sua env global
-      const response = await apiFetch("/faleconosco", {
+      // O apiFetch já faz o POST e retorna o resultado ou lança exceção
+      await apiFetch("/faleconosco", {
         method: "POST",
         body: JSON.stringify({ 
             nome: nomeUsuario, 
@@ -34,12 +33,8 @@ export default function FaleConosco() {
         }),
       });
 
-      if (response.ok) {
-        setStatus("success");
-        setMensagem(""); 
-      } else {
-        setStatus("error");
-      }
+      setStatus("success");
+      setMensagem(""); 
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
       setStatus("error");
@@ -51,15 +46,8 @@ export default function FaleConosco() {
   return (
     <DeviceMockup>
       <div className="app-shell"> 
-         <Header />
-        <div className="app-header-container">
-          <div className="app-header">
-            
-          </div>
-        </div>
-        
+        <Header />
         <div className="app-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '10px' }}> 
-          
           <div className="contato-card" style={{ margin: '0 auto', width: '100%', boxSizing: 'border-box' }}> 
             
             <div className="contato-card-title-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -67,7 +55,7 @@ export default function FaleConosco() {
               <h2 className="contato-card-title">Fale conosco</h2>
             </div>
 
-           <div className="contato-bloco-interno"> 
+            <div className="contato-bloco-interno"> 
               <div className="contato-item-bloco">
                 <img src={iconeTelefone} alt="Central de atendimento" className="contato-icone" /> 
                 <div className="contato-texto">
@@ -96,21 +84,12 @@ export default function FaleConosco() {
                   required
                   rows="5"
                   style={{ 
-                    width: '100%', 
-                    padding: '16px', 
-                    marginBottom: '15px', 
-                    borderRadius: '12px', 
+                    width: '100%', padding: '16px', marginBottom: '15px', borderRadius: '12px', 
                     border: isFocused ? '2px solid #E86616' : '1px solid #dcdcdc',
                     backgroundColor: isFocused ? '#ffffff' : '#f8f9fa', 
                     boxShadow: isFocused ? '0 4px 12px rgba(232, 102, 22, 0.15)' : 'inset 0 2px 4px rgba(0,0,0,0.03)', 
-                    outline: 'none', 
-                    resize: 'none', 
-                    fontFamily: 'inherit',
-                    fontSize: '15px',
-                    color: '#333',
-                    lineHeight: '1.5',
-                    boxSizing: 'border-box',
-                    transition: 'all 0.3s ease' 
+                    outline: 'none', resize: 'none', fontFamily: 'inherit', fontSize: '15px',
+                    color: '#333', lineHeight: '1.5', boxSizing: 'border-box', transition: 'all 0.3s ease' 
                   }}
                 />
               </div>
@@ -119,18 +98,10 @@ export default function FaleConosco() {
                 type="submit" 
                 disabled={carregando}
                 style={{ 
-                    width: '100%', 
-                    padding: '14px', 
-                    backgroundColor: '#E86616', 
-                    color: '#fff', 
-                    border: 'none', 
-                    borderRadius: '12px', 
-                    fontWeight: 'bold', 
-                    cursor: 'pointer', 
-                    fontSize: '16px', 
-                    boxSizing: 'border-box',
-                    boxShadow: '0 4px 6px rgba(232, 102, 22, 0.2)', 
-                    transition: 'opacity 0.2s'
+                    width: '100%', padding: '14px', backgroundColor: '#E86616', color: '#fff', 
+                    border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', 
+                    fontSize: '16px', boxSizing: 'border-box', boxShadow: '0 4px 6px rgba(232, 102, 22, 0.2)', 
+                    transition: 'opacity 0.2s', opacity: carregando ? 0.7 : 1
                 }}
               >
                 {carregando ? "A enviar..." : "Enviar Mensagem"}
@@ -139,10 +110,8 @@ export default function FaleConosco() {
               {status === "success" && <p style={{ color: "green", marginTop: "15px", textAlign: "center", fontWeight: "bold" }}>Mensagem enviada com sucesso!</p>}
               {status === "error" && <p style={{ color: "red", marginTop: "15px", textAlign: "center", fontWeight: "bold" }}>Erro ao enviar. Tente novamente.</p>}
             </form>
-
           </div>
         </div>
-
         <Footer /> 
       </div>
     </DeviceMockup>

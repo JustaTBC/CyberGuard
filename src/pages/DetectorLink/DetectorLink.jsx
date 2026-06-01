@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
 import Header from "../../componentes/Header";
-import { apiFetch } from "../../services/api"; // Importação adicionada
+import { apiFetch } from "../../services/api"; 
 import "./styles.css";
 import CardLaranja from "../../componentes/CardLaranja";
 import linkIcon from "./assets/link.png";
@@ -23,26 +23,23 @@ export default function DetectorLink() {
     setCarregando(true);
 
     try {
-      // Usando o apiFetch no lugar do fetch padrão
-      const response = await apiFetch("/links/verificar", {
+      // 1. Chamada simplificada: O apiFetch já retorna os dados (JSON)
+      // e lança erro automaticamente se o status não for 2xx.
+      const dados = await apiFetch("/links/verificar", {
         method: "POST",
         body: JSON.stringify({ url: urlDigitada }),
       });
 
-      if (response.ok) {
-        const dados = await response.json();
-
-        if (dados.seguro) {
-          navigate("/DetectorLinkverdadeiro");
-        } else {
-          navigate("/DetectorLinkfalso");
-        }
+      // 2. Navegação baseada na resposta direta
+      if (dados.seguro) {
+        navigate("/DetectorLinkverdadeiro");
       } else {
-        alert("Ocorreu um erro no servidor ao analisar o link.");
+        navigate("/DetectorLinkfalso");
       }
+      
     } catch (error) {
       console.error("Erro na comunicação:", error);
-      alert("Falha de conexão com o backend.");
+      alert("Falha ao analisar o link: " + error.message);
     } finally {
       setCarregando(false);
     }
@@ -52,10 +49,7 @@ export default function DetectorLink() {
     <div className="app-shell">
       <Header />
       <div className="app-content">
-        <section
-          className="DetectordeQRcodefalso"
-          aria-labelledby="DetectordeQRcodefalso-title"
-        >
+        <section className="DetectordeQRcodefalso" aria-labelledby="DetectordeQRcodefalso-title">
           <div className="titulo-link">
             <h2 id="DetectordeQRcodefalso-title">Detector de Links Falsos</h2>
           </div>
@@ -75,17 +69,20 @@ export default function DetectorLink() {
               onChange={(e) => setUrlDigitada(e.target.value)}
             />
 
-            <a
-              href="#"
+            <button
               className="link-container"
               onClick={handleAnalisarLink}
+              disabled={carregando}
               style={{
-                pointerEvents: carregando ? "none" : "auto", 
-                opacity: carregando ? 0.7 : 1, 
+                cursor: carregando ? "not-allowed" : "pointer",
+                opacity: carregando ? 0.7 : 1,
+                border: "none",
+                background: "none",
+                padding: 0
               }}
             >
               {carregando ? "A ANALISAR..." : "ANALISAR LINK"}
-            </a>
+            </button>
           </CardLaranja>
         </section>
       </div>
