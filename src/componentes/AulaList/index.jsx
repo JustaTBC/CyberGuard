@@ -1,7 +1,6 @@
 import "./styles.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-// Importação do nosso arquivo centralizado
 import { apiFetch } from "../../services/api";
 
 export default function AulasList() {
@@ -15,16 +14,13 @@ export default function AulasList() {
       setLoading(true);
       setErro("");
 
-      // 👇 A MUDANÇA ACONTECEU AQUI: trocamos fetch por apiFetch
-      const resposta = await apiFetch(
-        `/api/aulas?pageToken=${pagina}&maxResults=10`,
-      );
+      // O apiFetch já faz o request e transforma em objeto/json automaticamente
+      const data = await apiFetch(`/api/aulas?pageToken=${pagina}&maxResults=10`);
 
-      if (!resposta.ok) {
-        throw new Error("Erro na comunicação com o servidor.");
+      // Verificação: se o backend não retornar o que esperamos, lançamos um erro
+      if (!data || !data.items) {
+        throw new Error("Formato de dados inválido.");
       }
-
-      const data = await resposta.json();
 
       const novos = (data.items || [])
         .map((item) => {
@@ -44,10 +40,8 @@ export default function AulasList() {
       setVideos((prev) => [...prev, ...novos]);
       setNextPageToken(data.nextPageToken || "");
     } catch (e) {
-      console.error(e);
-      setErro(
-        "Não foi possível carregar os vídeos agora. Tente novamente mais tarde.",
-      );
+      console.error("Erro ao carregar vídeos:", e);
+      setErro("Não foi possível carregar os vídeos agora. Tente novamente mais tarde.");
     } finally {
       setLoading(false);
     }
@@ -71,9 +65,7 @@ export default function AulasList() {
         >
           <div className="thumb">
             <img
-              src={
-                v.thumb || `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`
-              }
+              src={v.thumb || `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`}
               alt={`Miniatura: ${v.titulo}`}
               loading="lazy"
             />
@@ -85,31 +77,17 @@ export default function AulasList() {
         </Link>
       ))}
 
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "1rem",
-        }}
-      >
+      <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "1rem" }}>
         {loading ? (
-          <button className="btn-carregar" disabled>
-            Carregando…
-          </button>
+          <button className="btn-carregar" disabled>Carregando…</button>
         ) : nextPageToken ? (
-          <button
-            className="btn-carregar"
-            onClick={() => carregar(nextPageToken)}
-          >
+          <button className="btn-carregar" onClick={() => carregar(nextPageToken)}>
             Carregar mais
           </button>
         ) : (
-          videos.length > 0 && (
-            <span style={{ opacity: 0.7 }}>Fim da lista</span>
-          )
+          videos.length > 0 && <span style={{ opacity: 0.7 }}>Fim da lista</span>
         )}
       </div>
     </div>
   );
-}   
+}
