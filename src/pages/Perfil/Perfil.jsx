@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../componentes/Footer";
-import Header from "../../componentes/Header"; // Certifique-se de manter o Header se desejar
+//import Header from "../../componentes/Header"; // Certifique-se de manter o Header se desejar
 import { apiFetch } from "../../services/api";
 import "./styles.css";
 import Certificados from "../../componentes/Certificado_Perfil";
