@@ -57,7 +57,6 @@ export default function Perfil() {
 
   return (
     <>
-      <Header />
       <div className="perfil-card">
         <div className="foto-container">
           <img
