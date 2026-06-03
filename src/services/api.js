@@ -12,12 +12,18 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   const response = await fetch(url, options);
 
-  // Se o servidor responder com erro (400, 500, etc), lançamos um erro
+  // 1. Tratamento de erro (se o status não for 2xx)
   if (!response.ok) {
-    const erroDados = await response.json().catch(() => ({})); // tenta ler o erro do back
+    const erroDados = await response.json().catch(() => ({}));
     throw new Error(erroDados.message || `Erro: ${response.status}`);
   }
 
-  // Já retorna o JSON processado para quem chamou
+  // 2. CORREÇÃO: Se o status for 204 (No Content), não tente ler JSON.
+  // Isso evita o erro de "Unexpected end of input" que causa o popup.
+  if (response.status === 204) {
+    return null; 
+  }
+
+  // 3. Para qualquer outro caso de sucesso (como 200 OK), processa o JSON normalmente.
   return await response.json();
 };
